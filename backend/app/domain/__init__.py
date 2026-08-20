@@ -70,13 +70,33 @@ default_attendance = [
     ),
 ]
 
-student_repository = InMemoryStudentRepository(default_students)
-parent_repository = InMemoryParentRepository(default_parents)
-teacher_repository = InMemoryTeacherRepository(default_teachers)
-class_repository = InMemoryClassRepository(default_classes)
-parent_student_repository = InMemoryParentStudentRepository(default_parent_student)
-teacher_class_repository = InMemoryTeacherClassRepository(default_teacher_class)
-attendance_repository = InMemoryAttendanceRepository(default_attendance)
+from .database import SessionLocal, DATABASE_URL
+from .sql_repositories import (
+    SQLStudentRepository,
+    SQLParentRepository,
+    SQLTeacherRepository,
+    SQLClassRepository,
+    SQLParentStudentRepository,
+    SQLTeacherClassRepository,
+    SQLAttendanceRepository,
+)
+
+if SessionLocal is not None:
+    student_repository = SQLStudentRepository(SessionLocal)
+    parent_repository = SQLParentRepository(SessionLocal)
+    teacher_repository = SQLTeacherRepository(SessionLocal)
+    class_repository = SQLClassRepository(SessionLocal)
+    parent_student_repository = SQLParentStudentRepository(SessionLocal)
+    teacher_class_repository = SQLTeacherClassRepository(SessionLocal)
+    attendance_repository = SQLAttendanceRepository(SessionLocal)
+else:
+    student_repository = InMemoryStudentRepository(default_students)
+    parent_repository = InMemoryParentRepository(default_parents)
+    teacher_repository = InMemoryTeacherRepository(default_teachers)
+    class_repository = InMemoryClassRepository(default_classes)
+    parent_student_repository = InMemoryParentStudentRepository(default_parent_student)
+    teacher_class_repository = InMemoryTeacherClassRepository(default_teacher_class)
+    attendance_repository = InMemoryAttendanceRepository(default_attendance)
 
 # Repository aliases
 student_repo = student_repository
@@ -92,7 +112,7 @@ school_domain_service = SchoolDomainService(
     parent_repo=parent_repository,
     teacher_repo=teacher_repository,
     class_repo=class_repository,
-    parent_student_repo=parent_student_repository,
-    teacher_class_repo=teacher_class_repository,
+    parent_student_repo=parent_student_repo,
+    teacher_class_repo=teacher_class_repo,
     attendance_repo=attendance_repository,
 )
