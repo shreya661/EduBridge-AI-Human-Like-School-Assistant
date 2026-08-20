@@ -1,7 +1,6 @@
 """Validated data contracts for NLU input and output."""
 
-from typing import Any
-
+from typing import Any, Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.nlu.intents import Intent
@@ -26,13 +25,25 @@ SUPPORTED_LANGUAGE_CODES = {
 class NLUEntities(BaseModel):
     """Optional entities extracted from a user message."""
 
-    model_config = ConfigDict(extra="forbid", strict=True)
+    model_config = ConfigDict(extra="forbid")
 
-    student_id: str | None = None
-    student_name: str | None = None
-    class_name: str | None = None
-    date: str | None = None
-    attendance_period: str | None = None
+    student_id: Optional[str] = None
+    student_name: Optional[str] = None
+    class_id: Optional[str] = None
+    class_name: Optional[str] = None
+    date: Optional[str] = None
+    date_range: Optional[str] = None
+    attendance_status: Optional[str] = None
+    attendance_period: Optional[str] = None
+
+    @property
+    def date_expression(self) -> Optional[str]:
+        return self.date
+
+    @date_expression.setter
+    def date_expression(self, value: Optional[str]) -> None:
+        self.date = value
+
 
 
 class NLUResult(BaseModel):
@@ -41,10 +52,11 @@ class NLUResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     intent: Intent
-    language: str
+    language: str = "en"
     entities: NLUEntities = Field(default_factory=NLUEntities)
     missing_information: list[str] = Field(default_factory=list)
-    confidence: float = Field(ge=0.0, le=1.0, strict=True)
+    requires_clarification: bool = False
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
 
     @field_validator("language")
     @classmethod

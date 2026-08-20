@@ -1,25 +1,18 @@
-"""Trusted identity models supplied by the application session layer."""
+# backend/app/session/models.py
+from pydantic import BaseModel
+from typing import Optional, List
+from enum import Enum
 
-from enum import StrEnum
-
-from pydantic import BaseModel, ConfigDict, Field
-
-
-class Role(StrEnum):
-    STUDENT = "student"
-    PARENT = "parent"
-    TEACHER = "teacher"
-    PRINCIPAL = "principal"
-
+class Role(str, Enum):
+    STUDENT = "STUDENT"
+    PARENT = "PARENT"
+    TEACHER = "TEACHER"
+    PRINCIPAL = "PRINCIPAL"
 
 class Identity(BaseModel):
-    """Trusted identity data; never derive these fields from an LLM or message."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    user_id: str = Field(min_length=1)
+    user_id: str
     role: Role
-    name: str = Field(min_length=1)
-    student_id: str | None = None
-    associated_student_ids: tuple[str, ...] = ()
-    assigned_class_names: tuple[str, ...] = ()
+    name: str
+    student_id: Optional[str] = None
+    associated_student_ids: List[str] = []
+    assigned_class_names: List[str] = []
