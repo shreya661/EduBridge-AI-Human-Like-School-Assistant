@@ -6,7 +6,7 @@ from typing import Optional, Dict, Any
 
 from app.session.models import Identity
 from app.session.dependencies import require_authenticated_identity
-from app.authz.guard import authorize_request_detailed
+from app.authz.guard import authorize_request_detailed 
 from app.tools.escalation_tool import escalation_tool
 from app.mock_api.escalation import escalation_service, EscalationTicket
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/v1/escalate", tags=["escalation"])
 
 class EscalationCreateRequest(BaseModel):
     target: str = "teacher"  # "teacher" or "management"
-    reason: str = "Requesting staff contact"
+    reason: Optional[str] = "General query / Human intervention requested"
     student_id: Optional[str] = None
 
 

@@ -128,18 +128,23 @@ class SQLParentStudentRepository(ParentStudentRepository):
     def get_children_for_parent(self, parent_id: str) -> List[str]:
         with self.session_factory() as session:
             objs = session.query(SQLParentStudent).filter(SQLParentStudent.parent_id == parent_id).all()
-            return [o.student_id for o in objs]
+            return list(dict.fromkeys([o.student_id for o in objs]))
 
     def get_parents_for_student(self, student_id: str) -> List[str]:
         with self.session_factory() as session:
             objs = session.query(SQLParentStudent).filter(SQLParentStudent.student_id == student_id).all()
-            return [o.parent_id for o in objs]
+            return list(dict.fromkeys([o.parent_id for o in objs]))
 
     def create_relationship(self, relationship: ParentStudent) -> ParentStudent:
         with self.session_factory() as session:
-            sql_obj = SQLParentStudent(parent_id=relationship.parent_id, student_id=relationship.student_id)
-            session.add(sql_obj)
-            session.commit()
+            existing = session.query(SQLParentStudent).filter(
+                SQLParentStudent.parent_id == relationship.parent_id,
+                SQLParentStudent.student_id == relationship.student_id
+            ).first()
+            if not existing:
+                sql_obj = SQLParentStudent(parent_id=relationship.parent_id, student_id=relationship.student_id)
+                session.add(sql_obj)
+                session.commit()
             return relationship
 
     def get_relationships(self, parent_id: str, student_id: str) -> List[ParentStudent]:
@@ -158,18 +163,23 @@ class SQLTeacherClassRepository(TeacherClassRepository):
     def get_classes_for_teacher(self, teacher_id: str) -> List[str]:
         with self.session_factory() as session:
             objs = session.query(SQLTeacherClass).filter(SQLTeacherClass.teacher_id == teacher_id).all()
-            return [o.class_id for o in objs]
+            return list(dict.fromkeys([o.class_id for o in objs]))
 
     def get_teachers_for_class(self, class_id: str) -> List[str]:
         with self.session_factory() as session:
             objs = session.query(SQLTeacherClass).filter(SQLTeacherClass.class_id == class_id).all()
-            return [o.teacher_id for o in objs]
+            return list(dict.fromkeys([o.teacher_id for o in objs]))
 
     def create_relationship(self, relationship: TeacherClass) -> TeacherClass:
         with self.session_factory() as session:
-            sql_obj = SQLTeacherClass(teacher_id=relationship.teacher_id, class_id=relationship.class_id)
-            session.add(sql_obj)
-            session.commit()
+            existing = session.query(SQLTeacherClass).filter(
+                SQLTeacherClass.teacher_id == relationship.teacher_id,
+                SQLTeacherClass.class_id == relationship.class_id
+            ).first()
+            if not existing:
+                sql_obj = SQLTeacherClass(teacher_id=relationship.teacher_id, class_id=relationship.class_id)
+                session.add(sql_obj)
+                session.commit()
             return relationship
 
 

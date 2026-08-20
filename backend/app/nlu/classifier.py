@@ -6,6 +6,31 @@ from app.nlu.models import IntentType
 from app.nlu.intents import Intent
 from app.nlu.schemas import NLUResult, NLUEntities
 
+INDIC_NAME_MAP = {
+    # Gujarati
+    "રાહુલ": "Rahul",
+    "અર્જુન": "Arjun",
+    "અનન્યા": "Ananya",
+    "પ્રિયા": "Priya",
+    "આરવ": "Aarav",
+    "દિયા": "Diya",
+    # Hindi / Devanagari
+    "राहुल": "Rahul",
+    "अर्जुन": "Arjun",
+    "अनन्या": "Ananya",
+    "प्रिया": "Priya",
+    "आरव": "Aarav",
+    "दिया": "Diya",
+    # Tamil
+    "ராகுல்": "Rahul",
+    "அர்ஜுன்": "Arjun",
+    "பிரியா": "Priya",
+    # Telugu
+    "రాహుల్": "Rahul",
+    "అర్జున్": "Arjun",
+    "ప్రియ": "Priya",
+}
+
 
 class NLUClassifier:
     def __init__(self):
@@ -16,15 +41,41 @@ class NLUClassifier:
                 r"my.*attendance",
                 r"attendance.*mine",
                 r"what is my attendance",
+                r"મારી.*હાજરી",
+                r"હાજરી",
+                r"मेरी.*उपस्थिति",
+                r"मेरी.*हाजिरी",
+                r"उपस्थिति",
+                r"हाजिरी",
+                r"என்.*வருகை",
+                r"வருகை",
+                r"నా.*హాజరు",
+                r"హాజరు",
+                r"माझी.*उपस्थिती",
+                r"माझी.*हजेरी",
+                r"আমার.*উপস্থিতি",
             ],
             Intent.VIEW_CHILD_ATTENDANCE: [
                 r"child.*attendance",
                 r"attendance.*child",
                 r"how.*much.*attendance.*child",
+                r"how is .* attendance",
+                r".*'s attendance",
+                r"how is .*",
+                r"attendance.*for.*",
                 r"attendance.*kid",
                 r"kid.*attendance",
                 r"my child.*attendance",
                 r"attendance for.*",
+                r"બાળક.*હાજરી",
+                r"બાળકની.*હાજરી",
+                r"દીકરા.*હાજરી",
+                r"દીકરી.*હાજરી",
+                r"बच्चे.*उपस्थिति",
+                r"बच्चे.*हाजिरी",
+                r"குழந்தை.*வருகை",
+                r"పిల్లల.*హాజరు",
+                r"मुलाची.*हजेरी",
             ],
             Intent.MARK_ATTENDANCE: [
                 r"mark.*absent",
@@ -33,6 +84,16 @@ class NLUClassifier:
                 r"absent.*",
                 r"present.*",
                 r"mark.*attendance",
+                r"ગેરહાજર",
+                r"હાજર",
+                r"अनुपस्थित",
+                r"उपस्थित",
+                r"வராதவர்",
+                r"வந்தவர்",
+                r"గైర్హాజరు",
+                r"హాజరు",
+                r"गैरहजर",
+                r"हजर",
             ],
             Intent.VIEW_CLASS_ATTENDANCE: [
                 r"class.*attendance",
@@ -40,12 +101,22 @@ class NLUClassifier:
                 r"students.*class",
                 r"class.*list",
                 r"who.*class",
+                r"વર્ગ.*હાજરી",
+                r"કક્ષા.*હાજરી",
+                r"कक्षा.*उपस्थिति",
+                r"வகுப்பு.*வருகை",
+                r"తరగతి.*హాజరు",
             ],
             Intent.VIEW_SCHOOL_ATTENDANCE: [
                 r"overall.*attendance",
                 r"total.*attendance",
                 r"school.*attendance",
                 r"all.*attendance",
+                r"કુલ.*હાજરી",
+                r"શાળા.*હાજરી",
+                r"कुल.*उपस्थिति",
+                r"மொத்த.*வருகை",
+                r"మొత్తం.*హాజరు",
             ],
             Intent.VIEW_SCHOOL_ANALYTICS: [
                 r"analytics",
@@ -53,6 +124,9 @@ class NLUClassifier:
                 r"attendance analytics",
                 r"low attendance",
                 r"flagged",
+                r"અહેવાલ",
+                r"વિશ્લેષણ",
+                r"रिपोर्ट",
             ],
             Intent.ESCALATE_TO_TEACHER: [
                 r"talk.*teacher",
@@ -63,6 +137,13 @@ class NLUClassifier:
                 r"teacher.*call",
                 r"discuss.*teacher",
                 r"escalate.*teacher",
+                r"શિક્ષક",
+                r"શિક્ષક.*સાથે.*વાત",
+                r"અધ્યાપક",
+                r"शिक्षक",
+                r"अध्यापक",
+                r"ஆசிரியர்",
+                r"ఉపాధ్యాయుడు",
             ],
             Intent.ESCALATE_TO_MANAGEMENT: [
                 r"talk.*principal",
@@ -74,6 +155,10 @@ class NLUClassifier:
                 r"speak.*management",
                 r"admin.*callback",
                 r"escalate.*management",
+                r"પ્રિન્સિપાલ",
+                r"મેનેજમેન્ટ",
+                r"प्रिंसिपल",
+                r"प्रबंधन",
             ],
             Intent.GREETING: [
                 r"\bhello\b",
@@ -141,10 +226,22 @@ class NLUClassifier:
         candidate_words = [w for w in words if w.lower() not in stop_words]
         if candidate_words:
             entities.student_name = " ".join(candidate_words[:2])
+        else:
+            for indic_name, eng_name in INDIC_NAME_MAP.items():
+                if indic_name in text:
+                    entities.student_name = eng_name
+                    break
         
-        for status in ['present', 'absent', 'late', 'excused']:
-            if re.search(rf"\b{status}\b", text.lower()):
-                entities.attendance_status = status.upper()
+        # Status extraction across languages
+        status_map = {
+            'ABSENT': ['absent', 'ગેરહાજર', 'अनुपस्थित', 'गैरहजर', 'வராதவர்', 'గైర్హాజరు', 'অনুপস্থিত'],
+            'PRESENT': ['present', 'હાજર', 'उपस्थित', 'हजर', 'வந்தவர்', 'హాజరు', 'উপস্থিত'],
+            'LATE': ['late', 'મોડું', 'વિલંબ', 'देरी', 'उशीर', 'தாமதம்', 'ఆలస్యం'],
+            'EXCUSED': ['excused', 'રજા', 'छुट्टी', 'સૂચના', 'விடுமுறை']
+        }
+        for status_val, keywords in status_map.items():
+            if any(kw in text.lower() for kw in keywords):
+                entities.attendance_status = status_val
                 break
         
         for date_expr in ['today', 'yesterday', 'tomorrow', 'now', 'current']:

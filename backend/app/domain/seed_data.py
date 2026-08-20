@@ -134,15 +134,37 @@ def seed_school_data():
         recorded_by="T001"
     ))
     
-    attendance_repo.create_attendance_record(AttendanceRecord(
-        record_id=f"att-{uuid4().hex[:8]}",
-        student_id="S002",
-        class_id="C002",
-        date=date.today(),
-        status=AttendanceStatus.ABSENT,
-        recorded_by="T002"
-    ))
-    
+    # Legacy development teacher for unit tests
+    teacher_legacy_1 = Teacher(teacher_id="teacher-001", name="Mr. Johnson", subject="Mathematics")
+    teacher_repo.create_teacher(teacher_legacy_1)
+
+    # Legacy development classes for unit tests
+    class_legacy_1 = Class(class_id="10-A", name="10-A", teacher_id="teacher-001")
+    class_repo.create_class(class_legacy_1)
+
+    # Legacy development students for unit tests
+    student_legacy_1 = Student(student_id="student-001", name="Rahul", class_id="10-A")
+    student_legacy_2 = Student(student_id="student-002", name="Ananya", class_id="10-A")
+    student_repo.create_student(student_legacy_1)
+    student_repo.create_student(student_legacy_2)
+
+    # Legacy development parents for unit tests
+    parent_legacy_1 = Parent(parent_id="parent-001", name="Priya Sharma")
+    parent_legacy_2 = Parent(parent_id="parent-002", name="Ananya's Parent")
+    parent_legacy_3 = Parent(parent_id="parent-003", name="Rahul and Ananya's Parent")
+    parent_repo.create_parent(parent_legacy_1)
+    parent_repo.create_parent(parent_legacy_2)
+    parent_repo.create_parent(parent_legacy_3)
+
+    # Legacy development parent-student relationships
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-001", student_id="student-001"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-002", student_id="student-002"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-003", student_id="student-001"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-003", student_id="student-002"))
+
+    # Legacy development teacher-class relationship
+    teacher_class_repo.create_relationship(TeacherClass(teacher_id="teacher-001", class_id="10-A"))
+
     print("School domain data seeded successfully!")
 
 

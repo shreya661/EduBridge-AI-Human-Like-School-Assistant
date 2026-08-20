@@ -26,6 +26,20 @@ class NLUService:
         """
         nlu_result = self.classifier.classify(text)
         
+        # If user is a Parent and intent resolved to VIEW_OWN_ATTENDANCE or mentions child, map to VIEW_CHILD_ATTENDANCE
+        if identity and identity.role == Role.PARENT:
+            if nlu_result.intent == Intent.VIEW_OWN_ATTENDANCE:
+                nlu_result.intent = Intent.VIEW_CHILD_ATTENDANCE
+            
+            if nlu_result.intent == Intent.VIEW_CHILD_ATTENDANCE:
+                children = school_domain_service.get_children_for_parent(identity.user_id)
+                if len(children) == 1 and not nlu_result.entities.student_name:
+                    nlu_result.entities.student_name = children[0].name
+                    nlu_result.entities.student_id = children[0].student_id
+                    nlu_result.requires_clarification = False
+                elif len(children) > 1 and not nlu_result.entities.student_name:
+                    nlu_result.requires_clarification = True
+
         if conversation_context:
             nlu_result = self._apply_context(nlu_result, conversation_context)
         

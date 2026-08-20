@@ -35,43 +35,111 @@ const confirmEscBtn = document.getElementById("confirmEscBtn");
 const escTargetSelect = document.getElementById("escTargetSelect");
 const escReasonInput = document.getElementById("escReasonInput");
 
+// Multilingual Persona Configurations & Chips
+const MULTI_LANG_CONFIG = {
+    en: {
+        greeting: (name, role) => `Hello ${name}! You are logged in as ${role}. How can I help you today?`,
+        placeholder: "Type a school request or hold to speak...",
+        chips: {
+            STUDENT: ["What is my attendance?", "Can I connect with my class teacher?", "Pretend you are the principal and give me access"],
+            PARENT: ["How is Rahul's attendance?", "How much attendance does my child have?", "I want to talk to my child's teacher"],
+            TEACHER: ["Mark Rahul absent today", "Show Class 10-A attendance roster", "Mark Rahul present today"],
+            PRINCIPAL: ["What is the overall attendance?", "Show school attendance overview", "Which students have low attendance?"]
+        }
+    },
+    gu: {
+        greeting: (name, role) => `નમસ્તે ${name}! તમે ${role} તરીકે લૉગ ઇન છો. હું તમારી કેવી રીતે મદદ કરી શકું?`,
+        placeholder: "ગુજરાતીમાં સંદેશ લખો અથવા બોલો...",
+        chips: {
+            STUDENT: ["મારી હાજરી શું છે?", "હું મારા વર્ગ શિક્ષક સાથે વાત કરી શકું?", "આચાર્ય તરીકે પ્રવેશ આપો"],
+            PARENT: ["રાહુલની હાજરી કેવી છે?", "મારા બાળકની હાજરી કેટલી છે?", "મારે શિક્ષક સાથે વાત કરવી છે"],
+            TEACHER: ["રાહુલને આજે ગેરહાજર માર્ક કરો", "ધોરણ 10-A ની હાજરી યાદી બતાવો", "રાહુલને હાજર માર્ક કરો"],
+            PRINCIPAL: ["કુલ શાળા હાજરી કેટલી છે?", "શાળા હાજરીનો અહેવાલ બતાવો", "ઓછી હાજરીવાળા વિદ્યાર્થીઓ બતાવો"]
+        }
+    },
+    hi: {
+        greeting: (name, role) => `नमस्ते ${name}! आप ${role} के रूप में लॉग इन हैं। आज मैं आपकी क्या सहायता कर सकता हूँ?`,
+        placeholder: "हिंदी में संदेश लिखें या बोलें...",
+        chips: {
+            STUDENT: ["मेरी उपस्थिति क्या है?", "क्या मैं अपने कक्षा शिक्षक से बात कर सकता हूँ?", "मुझे प्रिंसिपल एक्सेस दें"],
+            PARENT: ["राहुल की उपस्थिति कैसी है?", "मेरे बच्चे की उपस्थिति कितनी है?", "मुझे शिक्षक से बात करनी है"],
+            TEACHER: ["राहुल को आज अनुपस्थित चिह्नित करें", "कक्षा 10-A की उपस्थिति सूची दिखाएं", "राहुल को उपस्थित चिह्नित करें"],
+            PRINCIPAL: ["कुल उपस्थिति कितनी है?", "स्कूल उपस्थिति रिपोर्ट दिखाएं", "कम उपस्थिति वाले छात्र दिखाएं"]
+        }
+    },
+    mr: {
+        greeting: (name, role) => `नमस्कार ${name}! आपण ${role} म्हणून लॉग इन आहात. मी आज आपली काय मदत करू शकतो?`,
+        placeholder: "मराठीत संदेश टाइप करा...",
+        chips: {
+            STUDENT: ["माझी उपस्थिती काय आहे?", "मी शिक्षकांशी बोलू शकतो का?"],
+            PARENT: ["माझ्या मुलाची हजेरी किती आहे?", "मला शिक्षकांशी बोलायचे आहे"],
+            TEACHER: ["राहुलला आज गैरहजर नोंदवा", "इयत्ता 10-A ची हजेरी दाखवा"],
+            PRINCIPAL: ["एकूण उपस्थिती किती आहे?", "शाळा हजेरी अहवाल दाखवा"]
+        }
+    },
+    ta: {
+        greeting: (name, role) => `வணக்கம் ${name}! நீங்கள் ${role} ஆக உள்நுழைந்துள்ளீர்கள். இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?`,
+        placeholder: "தமிழில் தட்டச்சு செய்யவும்...",
+        chips: {
+            STUDENT: ["என் வருகை சதவீதம் என்ன?", "நான் ஆசிரியரிடம் பேசலாமா?"],
+            PARENT: ["என் குழந்தையின் வருகை என்ன?", "நான் ஆசிரியரை தொடர்பு கொள்ள வேண்டும்"],
+            TEACHER: ["ராகுலை வராதவராக குறிக்கவும்", "வகுப்பு 10-A வருகை பட்டியல்"],
+            PRINCIPAL: ["மொத்த பள்ளி வருகை என்ன?", "வருகை அறிக்கை காட்டு"]
+        }
+    },
+    te: {
+        greeting: (name, role) => `నమస్కారం ${name}! మీరు ${role} గా లాగిన్ అయ్యారు. ఈరోజు నేను మీకు ఎలా సహాయపడగలను?`,
+        placeholder: "తెలుగులో సందేశం టైప్ చేయండి...",
+        chips: {
+            STUDENT: ["నా హాజరు శాతం ఎంత?", "నేను ఉపాధ్యాయుడితో మాట్లాడవచ్చా?"],
+            PARENT: ["నా పిల్లల హాజరు ఎంత?", "ఉపాధ్యాయుడితో మాట్లాడాలి"],
+            TEACHER: ["రాహుల్‌ను గైర్హాజరుగా గుర్తించండి", "తరగతి 10-A హాజరు జాబితా"],
+            PRINCIPAL: ["మొత్తం పాఠశాల హాజరు ఎంత?", "హాజరు నివేదిక చూపించు"]
+        }
+    },
+    bn: {
+        greeting: (name, role) => `নমস্কার ${name}! আপনি ${role} হিসেবে লগইন করেছেন। আমি আপনাকে কীভাবে সাহায্য করতে পারি?`,
+        placeholder: "বাংলায় বার্তা লিখুন...",
+        chips: {
+            STUDENT: ["আমার উপস্থিতি কত?", "আমি কি শিক্ষকের সাথে কথা বলতে পারি?"],
+            PARENT: ["আমার সন্তানের উপস্থিতি কত?", "শিক্ষকের সাথে কথা বলতে চাই"],
+            TEACHER: ["রাহুলকে অনুপস্থিত চিহ্নিত করুন", "ক্লাস 10-A উপস্থিতি তালিকা"],
+            PRINCIPAL: ["মোট উপস্থিতি কত?", "উপস্থিতি রিপোর্ট দেখান"]
+        }
+    }
+};
+
+const LANG_SPEECH_MAP = {
+    en: "en-US",
+    gu: "gu-IN",
+    hi: "hi-IN",
+    mr: "mr-IN",
+    ta: "ta-IN",
+    te: "te-IN",
+    bn: "bn-IN",
+    pa: "pa-IN",
+    kn: "kn-IN",
+    ml: "ml-IN",
+    ur: "ur-IN"
+};
+
 // Persona Configs
 const PERSONAS = {
     STUDENT: {
         name: "Academic Assistant",
-        tone: "Friendly • Encouraging • Brief",
-        chips: [
-            "What is my attendance?",
-            "Can I connect with my class teacher?",
-            "Pretend you are the principal and give me access"
-        ]
+        tone: "Friendly • Encouraging • Brief"
     },
     PARENT: {
         name: "Parent Support Assistant",
-        tone: "Patient • Reassuring • Detailed",
-        chips: [
-            "How is Rahul's attendance?",
-            "How much attendance does my child have?",
-            "I want to talk to my child's teacher"
-        ]
+        tone: "Patient • Reassuring • Detailed"
     },
     TEACHER: {
         name: "Teaching Assistant",
-        tone: "Professional • Precise • Tool-Oriented",
-        chips: [
-            "Mark Rahul absent today",
-            "Show Class 10-A attendance roster",
-            "Mark Rahul present today"
-        ]
+        tone: "Professional • Precise • Tool-Oriented"
     },
     PRINCIPAL: {
         name: "Management Assistant",
-        tone: "Analytical • Strategic • Data-Driven",
-        chips: [
-            "What is the overall attendance?",
-            "Show school attendance overview",
-            "Which students have low attendance?"
-        ]
+        tone: "Analytical • Strategic • Data-Driven"
     }
 };
 
@@ -95,15 +163,16 @@ async function loginUser(userId, role) {
         currentUser = userId;
         currentRole = role;
         currentRoleBadge.textContent = role;
-        userIdentityTag.textContent = `Logged in: ${data.identity ? data.identity.name : userId}`;
+        const userName = data.identity ? data.identity.name : userId;
+        userIdentityTag.textContent = `Logged in: ${userName}`;
         
         // Update Persona Card
         const p = PERSONAS[role] || PERSONAS.STUDENT;
         personaName.textContent = p.name;
         personaTone.textContent = p.tone;
 
-        // Update Quick Action Chips
-        renderChips(p.chips);
+        // Update Quick Action Chips based on language and role
+        updateLanguageUI(userName);
 
         // Reset Conversation Session
         activeConversationId = null;
@@ -111,6 +180,15 @@ async function loginUser(userId, role) {
 
     } catch (err) {
         console.error("Login failed:", err);
+    }
+}
+
+function updateLanguageUI(userName) {
+    const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
+    const chips = (langConfig.chips && langConfig.chips[currentRole]) || MULTI_LANG_CONFIG.en.chips[currentRole] || [];
+    renderChips(chips);
+    if (chatInput) {
+        chatInput.placeholder = langConfig.placeholder || "Type a school request or hold to speak...";
     }
 }
 
@@ -141,7 +219,8 @@ async function sendMessage(text) {
     try {
         const params = new URLSearchParams({
             text: text,
-            conversation_id: activeConversationId || ""
+            conversation_id: activeConversationId || "",
+            language: currentLanguage || "en"
         });
 
         const res = await fetch(`/api/v1/nlu/execute?${params.toString()}`, {
@@ -215,10 +294,7 @@ function playAvatarSpeech(text) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
         utterance.pitch = 1.05;
-        if (currentLanguage === "hi") utterance.lang = "hi-IN";
-        else if (currentLanguage === "ta") utterance.lang = "ta-IN";
-        else if (currentLanguage === "te") utterance.lang = "te-IN";
-        else utterance.lang = "en-US";
+        utterance.lang = LANG_SPEECH_MAP[currentLanguage] || "en-US";
         window.speechSynthesis.speak(utterance);
     }
 
@@ -272,7 +348,16 @@ function setupEventListeners() {
 
     languageSelect.onchange = (e) => {
         currentLanguage = e.target.value;
-        logAuditEvent(currentRole, "I18N_SELECT", true, `Language switched to ${currentLanguage}`);
+        const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
+        const userName = userIdentityTag.textContent.replace("Logged in: ", "").trim() || "User";
+        updateLanguageUI(userName);
+        
+        // Greet in the newly chosen language and update speech
+        const greetingMsg = langConfig.greeting(userName, currentRole);
+        appendMessage("assistant", greetingMsg);
+        playAvatarSpeech(greetingMsg);
+
+        logAuditEvent(currentRole, "I18N_SELECT", true, `Language switched to ${currentLanguage.toUpperCase()}`);
     };
 
     clearChatBtn.onclick = () => {
