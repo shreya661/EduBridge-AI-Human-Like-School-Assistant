@@ -1,10 +1,15 @@
 """Database connection and session management for PostgreSQL / SQLite."""
 
 import os
+from pathlib import Path
 from typing import Optional
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from app.domain.sql_models import Base
+
+_ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
+load_dotenv(_ENV_FILE, override=True)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
