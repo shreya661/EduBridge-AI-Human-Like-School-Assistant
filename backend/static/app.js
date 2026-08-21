@@ -596,6 +596,11 @@ const MULTI_LANG_CONFIG = {
 
 // Initial Setup
 async function init() {
+    let savedAvatar = "maya";
+    try {
+        savedAvatar = localStorage.getItem("selectedAvatarCharacter") || "maya";
+    } catch (e) {}
+    switchAvatarCharacter(savedAvatar, false);
     await loginUser(currentUser, "Password@123", currentRole);
     setupEventListeners();
 }
@@ -622,10 +627,8 @@ async function loginUser(userId, password = "Password@123", fallbackRole = "STUD
 
         updateUserProfileUI(currentUser, currentRole, currentUserName);
 
-        // Update Persona Card
-        const p = PERSONAS[currentRole] || PERSONAS.STUDENT;
-        personaName.textContent = p.name;
-        personaTone.textContent = p.tone;
+        // Apply active Avatar Character Persona
+        switchAvatarCharacter(currentAvatarCharacter, false);
 
         // Update Quick Action Chips based on language and role
         updateLanguageUI(currentUserName);
@@ -801,9 +804,10 @@ function updateLanguageUI(userName) {
     if (escBtnText) escBtnText.textContent = ui.escalate;
 
     // 4. Persona Card
-    const p = (personas && personas[currentRole]) || (MULTI_LANG_CONFIG.en.personas[currentRole]) || { name: "Academic Assistant", tone: "Helpful" };
-    if (personaName) personaName.textContent = p.name;
-    if (personaTone) personaTone.textContent = p.tone;
+    const activeChar = AVATAR_CHARACTERS[currentAvatarCharacter] || AVATAR_CHARACTERS.maya;
+    if (personaName) personaName.textContent = activeChar.name;
+    if (personaTone) personaTone.textContent = activeChar.tone;
+    if (personaIcon) personaIcon.textContent = activeChar.icon;
 
     // 5. Chat Pane
     const chatHeading = document.getElementById("chatPaneHeading");
@@ -949,29 +953,61 @@ const AVATAR_CHARACTERS = {
         name: "Maya — Academic Specialist",
         tone: "Empathetic • Encouraging • Precise",
         icon: "👩‍🏫",
-        className: "avatar-maya",
-        pitch: 1.1
+        image: "/static/avatars/maya.jpg",
+        glowColor: "rgba(245, 158, 11, 0.45)",
+        borderColor: "#f59e0b",
+        pitch: 1.1,
+        voiceGender: "female",
+        introText: {
+            en: "Hello! I am Maya, your Academic Specialist. How can I help you today?",
+            gu: "નમસ્તે! હું માયા છું, તમારી શૈક્ષણિક સહાયક. હું તમારી કેવી રીતે મદદ કરી શકું?",
+            hi: "नमस्ते! मैं माया हूँ, आपकी शैक्षणिक सहायक। मैं आपकी क्या मदद कर सकती हूँ?"
+        }
     },
     vikram: {
         name: "Vikram — Senior STEM Mentor",
         tone: "Analytical • Clear • Structured",
         icon: "👨‍🏫",
-        className: "avatar-vikram",
-        pitch: 0.9
+        image: "/static/avatars/vikram.jpg",
+        glowColor: "rgba(59, 130, 246, 0.5)",
+        borderColor: "#3b82f6",
+        pitch: 0.88,
+        voiceGender: "male",
+        introText: {
+            en: "Greetings! I am Vikram, Senior STEM Mentor. Ready to assist with attendance, academics, and school operations.",
+            gu: "નમસ્તે! હું વિક્રમ છું, સિનિયર STEM મેન્ટર. શાળા સંચાલન અને શૈક્ષણિક પ્રશ્નો માટે તૈયાર.",
+            hi: "नमस्ते! मैं विक्रम हूँ, आपका वरिष्ठ STEM सलाहकार। मैं आपकी सहायता के लिए तैयार हूँ।"
+        }
     },
     priya: {
         name: "Dr. Priya — School Counselor",
         tone: "Patient • Reassuring • Compassionate",
         icon: "👩‍💼",
-        className: "avatar-priya",
-        pitch: 1.0
+        image: "/static/avatars/priya.jpg",
+        glowColor: "rgba(168, 85, 247, 0.5)",
+        borderColor: "#a855f7",
+        pitch: 1.0,
+        voiceGender: "female",
+        introText: {
+            en: "Welcome! I am Dr. Priya, School Counselor. I'm here to support your learning journey and well-being.",
+            gu: "આવકારો! હું ડૉ. પ્રિયા છું, શાળા કાઉન્સેલર. હું તમને માર્ગદર્શન અને સહાય આપવા માટે અહીં છું.",
+            hi: "स्वागत है! मैं डॉ. प्रिया हूँ, आपकी स्कूल काउंसलर। मैं आपके मार्गदर्शन के लिए यहाँ हूँ।"
+        }
     },
     nova: {
         name: "Nova — Cyber AI Assistant",
         tone: "Dynamic • Ultra-Fast • Futuristic",
         icon: "🤖",
-        className: "avatar-nova",
-        pitch: 1.25
+        image: "/static/avatars/nova.jpg",
+        glowColor: "rgba(6, 182, 212, 0.55)",
+        borderColor: "#06b6d4",
+        pitch: 1.25,
+        voiceGender: "female",
+        introText: {
+            en: "System online. Nova AI core active. Query processed through zero-trust security gate.",
+            gu: "સિસ્ટમ ઓનલાઇન. નોવા AI કોર સક્રિય. ઝીરો-ટ્રસ્ટ સુરક્ષા ગેટ દ્વારા પ્રશ્ન પ્રોસેસ થાય છે.",
+            hi: "सिस्टम ऑनलाइन। नोवा एआई सक्रिय। अनुरोध का सुरक्षित विश्लेषण तैयार है।"
+        }
     }
 };
 
@@ -980,20 +1016,34 @@ let isAudioMuted = false;
 let voiceSpeechRate = 1.0;
 let browserVoices = [];
 
-function switchAvatarCharacter(charKey) {
+function switchAvatarCharacter(charKey, speakGreeting = true) {
     const char = AVATAR_CHARACTERS[charKey];
     if (!char) return;
     currentAvatarCharacter = charKey;
 
-    const avatarVisual = document.getElementById("avatarVisual");
-    if (avatarVisual) {
-        avatarVisual.className = `avatar-container ${char.className}`;
-    }
-
+    const avatarImg = document.getElementById("avatarImg");
+    const avatarGlow = document.getElementById("avatarGlow");
+    const avatarPortraitWrap = document.getElementById("avatarPortraitWrap");
+    const avatarSpeakingPulse = document.getElementById("avatarSpeakingPulse");
     const personaIcon = document.getElementById("personaIcon");
     const personaName = document.getElementById("personaName");
     const personaTone = document.getElementById("personaTone");
     const chatAvatarBadge = document.getElementById("chatAvatarBadge");
+
+    if (avatarImg) {
+        avatarImg.src = char.image;
+        avatarImg.alt = char.name;
+    }
+    if (avatarGlow) {
+        avatarGlow.style.background = `radial-gradient(circle, ${char.glowColor} 0%, transparent 70%)`;
+    }
+    if (avatarPortraitWrap) {
+        avatarPortraitWrap.style.borderColor = char.borderColor;
+        avatarPortraitWrap.style.boxShadow = `0 0 24px ${char.glowColor}`;
+    }
+    if (avatarSpeakingPulse) {
+        avatarSpeakingPulse.style.borderColor = char.borderColor;
+    }
 
     if (personaIcon) personaIcon.textContent = char.icon;
     if (personaName) personaName.textContent = char.name;
@@ -1004,7 +1054,17 @@ function switchAvatarCharacter(charKey) {
         btn.classList.toggle("active", btn.dataset.avatar === charKey);
     });
 
-    logAuditEvent(currentRole, "AVATAR_SWITCH", true, `Avatar persona switched to ${char.name}`);
+    try {
+        localStorage.setItem("selectedAvatarCharacter", charKey);
+    } catch (e) {}
+
+    logAuditEvent(currentRole, "AVATAR_SWITCH", true, `Switched avatar to ${char.name}`);
+
+    if (speakGreeting) {
+        const greetingMsg = (char.introText && (char.introText[currentLanguage] || char.introText.en)) || `Switched to ${char.name}`;
+        appendMessage("assistant", greetingMsg);
+        playAvatarSpeech(greetingMsg);
+    }
 }
 
 function updateBrowserVoices() {
@@ -1024,10 +1084,8 @@ function playAvatarSpeech(text) {
     // If audio is muted, only do brief visual animation without sound
     if (isAudioMuted) {
         avatarStage.classList.add("speaking");
-        avatarMouth.classList.add("lip-sync");
         setTimeout(() => {
             avatarStage.classList.remove("speaking");
-            avatarMouth.classList.remove("lip-sync");
         }, 1200);
         return;
     }
@@ -1048,12 +1106,18 @@ function playAvatarSpeech(text) {
     const char = AVATAR_CHARACTERS[currentAvatarCharacter] || AVATAR_CHARACTERS.maya;
     utterance.pitch = char.pitch || 1.0;
 
-    // Pick best matching voice for current language
+    // Pick best matching voice for current language and gender preference
     updateBrowserVoices();
     if (browserVoices && browserVoices.length > 0) {
-        // 1. Exact locale match (e.g. gu-IN, hi-IN, ta-IN)
         let matched = browserVoices.find(v => v.lang && v.lang.toLowerCase() === targetLangCode.toLowerCase());
-        // 2. Language prefix match (e.g. gu, hi, ta)
+        
+        // If Vikram (male), try finding male voice if present
+        if (char.voiceGender === "male") {
+            const maleMatch = browserVoices.find(v => (v.lang && (v.lang.toLowerCase() === targetLangCode.toLowerCase() || v.lang.startsWith(currentLanguage))) && (v.name.toLowerCase().includes("male") || v.name.toLowerCase().includes("man") || v.name.toLowerCase().includes("david") || v.name.toLowerCase().includes("george") || v.name.toLowerCase().includes("rishi") || v.name.toLowerCase().includes("madhav")));
+            if (maleMatch) matched = maleMatch;
+        }
+
+        // 2. Language prefix match
         if (!matched) {
             matched = browserVoices.find(v => v.lang && v.lang.toLowerCase().startsWith(currentLanguage.toLowerCase()));
         }
@@ -1069,17 +1133,14 @@ function playAvatarSpeech(text) {
 
     utterance.onstart = () => {
         avatarStage.classList.add("speaking");
-        avatarMouth.classList.add("lip-sync");
     };
 
     utterance.onend = () => {
         avatarStage.classList.remove("speaking");
-        avatarMouth.classList.remove("lip-sync");
     };
 
     utterance.onerror = () => {
         avatarStage.classList.remove("speaking");
-        avatarMouth.classList.remove("lip-sync");
     };
 
     window.speechSynthesis.speak(utterance);
