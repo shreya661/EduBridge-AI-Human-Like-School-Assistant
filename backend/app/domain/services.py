@@ -80,3 +80,27 @@ class SchoolDomainService:
         )
         
         return self.attendance_repo.create_attendance_record(record)
+
+    def get_students_for_teacher(self, teacher_id: str) -> List[Student]:
+        """Get all distinct students across all classes assigned to a teacher"""
+        classes = self.get_classes_for_teacher(teacher_id)
+        seen_ids = set()
+        students = []
+        for cl in classes:
+            for st in self.get_students_in_class(cl.class_id):
+                if st.student_id not in seen_ids:
+                    seen_ids.add(st.student_id)
+                    students.append(st)
+        return students
+
+    def get_all_teachers(self) -> List[Teacher]:
+        """Get all teachers in the school"""
+        return self.teacher_repo.get_all_teachers()
+
+    def get_all_students(self) -> List[Student]:
+        """Get all students in the school"""
+        return self.student_repo.get_all_students()
+
+    def get_all_classes(self) -> List[Class]:
+        """Get all classes in the school"""
+        return self.class_repo.get_all_classes()
