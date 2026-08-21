@@ -165,6 +165,44 @@ def seed_school_data():
     # Legacy development teacher-class relationship
     teacher_class_repo.create_relationship(TeacherClass(teacher_id="teacher-001", class_id="10-A"))
 
+    # Seed 10-character Alphanumeric accounts
+    student_10 = Student(student_id="STU10A88F2", name="Aarav Patel", email="aarav.student@school.edu", class_id="C001")
+    student_repo.create_student(student_10)
+
+    teacher_10 = Teacher(teacher_id="TCH90K11X4", name="Kumar Singh", email="kumar.teacher@school.edu", subject="Mathematics")
+    teacher_repo.create_teacher(teacher_10)
+    teacher_class_repo.create_relationship(TeacherClass(teacher_id="TCH90K11X4", class_id="C001"))
+
+    parent_10 = Parent(parent_id="PAR81L90V7", name="Anita Patel", email="anita.parent@school.edu", phone="+91 98765 43210")
+    parent_repo.create_parent(parent_10)
+    parent_student_repo.create_relationship(ParentStudent(parent_id="PAR81L90V7", student_id="STU10A88F2"))
+
+    # Seed SQLUser credentials with hashed password
+    try:
+        from ..auth.security import hash_password
+        from ..domain.database import SessionLocal
+        from ..domain.sql_models import SQLUser
+        
+        if SessionLocal:
+            with SessionLocal() as session:
+                pw_hash, salt = hash_password("Password@123")
+                users_to_seed = [
+                    SQLUser(user_id="STU10A88F2", name="Aarav Patel", email="aarav.student@school.edu", role="STUDENT", password_hash=pw_hash, salt=salt),
+                    SQLUser(user_id="TCH90K11X4", name="Kumar Singh", email="kumar.teacher@school.edu", role="TEACHER", password_hash=pw_hash, salt=salt),
+                    SQLUser(user_id="PAR81L90V7", name="Anita Patel", email="anita.parent@school.edu", role="PARENT", password_hash=pw_hash, salt=salt),
+                    SQLUser(user_id="PRN10A99X1", name="Dr. Smith", email="principal@school.edu", role="PRINCIPAL", password_hash=pw_hash, salt=salt),
+                    # Also seed legacy accounts with default password
+                    SQLUser(user_id="S001", name="Rahul Patel", email="rahul.patel@example.com", role="STUDENT", password_hash=pw_hash, salt=salt),
+                    SQLUser(user_id="T001", name="Kumar Singh", email="kumar.singh@example.com", role="TEACHER", password_hash=pw_hash, salt=salt),
+                    SQLUser(user_id="P001", name="Anita Patel", email="anita.patel@example.com", role="PARENT", password_hash=pw_hash, salt=salt),
+                    SQLUser(user_id="principal-001", name="Dr. Smith", email="principal001@example.com", role="PRINCIPAL", password_hash=pw_hash, salt=salt),
+                ]
+                for u in users_to_seed:
+                    session.merge(u)
+                session.commit()
+    except Exception:
+        pass
+
     print("School domain data seeded successfully!")
 
 

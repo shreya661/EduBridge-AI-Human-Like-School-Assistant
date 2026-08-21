@@ -97,3 +97,15 @@ class SQLAttendanceRecord(Base):
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     student = relationship("SQLStudent", back_populates="attendance_records")
+
+
+class SQLUser(Base):
+    __tablename__ = "users"
+
+    user_id = Column(String(50), primary_key=True)
+    name = Column(String(150), nullable=False)
+    email = Column(String(150), nullable=True)
+    role = Column(String(50), nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    salt = Column(String(64), nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
