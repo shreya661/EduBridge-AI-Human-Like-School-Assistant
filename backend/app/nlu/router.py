@@ -38,9 +38,10 @@ async def analyze_nlu_message(
 
 
 from app.i18n.language_router import SupportedLanguage, detect_language, format_localized_message
+from app.security.rate_limiter import enforce_nlu_rate_limit
 
 
-@router.post("/execute")
+@router.post("/execute", dependencies=[Depends(enforce_nlu_rate_limit)])
 async def execute_nlu_message(
     text: str = Query(..., description="User message to process"),
     conversation_id: Optional[str] = Query(None, description="Conversation ID"),

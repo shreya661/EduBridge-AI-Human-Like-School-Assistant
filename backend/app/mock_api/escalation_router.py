@@ -29,6 +29,16 @@ async def create_escalation_endpoint(
     target_clean = "teacher" if "teacher" in payload.target.lower() else "management"
     intent_check = f"escalate_to_{target_clean}"
 
+    # Enforce escalation throttling (max 3 tickets / 10 mins)
+    from app.security.rate_limiter import escalation_limiter
+    allowed, retry_after = escalation_limiter.check_and_record(identity.user_id)
+    if not allowed:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Escalation ticket limit reached (max 3 per 10 minutes). Please try again in {retry_after} seconds.",
+            headers={"Retry-After": str(retry_after)}
+        )
+
     auth_result = authorize_request_detailed(identity, intent_check)
     if not auth_result.allowed:
         raise HTTPException(
