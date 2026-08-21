@@ -1,7 +1,9 @@
-# backend/app/session/store.py - Updated to use domain service for relationships
+# backend/app/session/store.py - Updated with database lookup and role-aware identity store
 from typing import Dict, Optional
 from .models import Identity, Role
 from ..domain import school_domain_service
+from ..domain.database import SessionLocal
+from ..domain.sql_models import SQLUser
 
 
 class InMemoryIdentityStore:
@@ -44,6 +46,29 @@ class InMemoryIdentityStore:
                 role=Role.PRINCIPAL,
                 name="Dr. Smith",
             ),
+            # Default seeded 10-char Alphanumeric Accounts
+            "STU10A88F2": Identity(
+                user_id="STU10A88F2",
+                role=Role.STUDENT,
+                name="Aarav Patel",
+                student_id="STU10A88F2",
+            ),
+            "TCH90K11X4": Identity(
+                user_id="TCH90K11X4",
+                role=Role.TEACHER,
+                name="Kumar Singh",
+            ),
+            "PAR81L90V7": Identity(
+                user_id="PAR81L90V7",
+                role=Role.PARENT,
+                name="Anita Patel",
+            ),
+            "PRN10A99X1": Identity(
+                user_id="PRN10A99X1",
+                role=Role.PRINCIPAL,
+                name="Dr. Smith",
+            ),
+            # Legacy short IDs for backward test compatibility
             "S001": Identity(
                 user_id="S001",
                 role=Role.STUDENT,
@@ -80,10 +105,44 @@ class InMemoryIdentityStore:
         }
 
     def get(self, user_id: str) -> Optional[Identity]:
-        return self.identities.get(user_id)
+        return self.get_identity(user_id)
 
     def get_identity(self, user_id: str) -> Optional[Identity]:
-        return self.identities.get(user_id)
+        if not user_id:
+            return None
+        
+        # 1. Fast in-memory cache check
+        if user_id in self.identities:
+            return self.identities[user_id]
+        
+        # 2. Database lookup in SQLUser
+        if SessionLocal:
+            try:
+                with SessionLocal() as session:
+                    user = session.query(SQLUser).filter(
+                        (SQLUser.user_id == user_id) | (SQLUser.email == user_id)
+                    ).first()
+                    if user:
+                        try:
+                            role_enum = Role(user.role.upper())
+                        except ValueError:
+                            role_enum = Role.STUDENT
+                        
+                        identity = Identity(
+                            user_id=user.user_id,
+                            role=role_enum,
+                            name=user.name,
+                            student_id=user.user_id if role_enum == Role.STUDENT else None,
+                        )
+                        self.identities[user.user_id] = identity
+                        return identity
+            except Exception:
+                pass
+
+        return None
+
+    def add_identity(self, identity: Identity):
+        self.identities[identity.user_id] = identity
 
     def get_all_identities(self) -> Dict[str, Identity]:
         return self.identities.copy()
