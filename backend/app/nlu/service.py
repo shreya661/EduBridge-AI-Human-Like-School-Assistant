@@ -228,6 +228,20 @@ class NLUService:
                     "message": analytics_res.get("message", "School analytics overview retrieved.")
                 }
 
+            elif intent in [Intent.OPEN_CANVA_STUDIO, "open_canva_studio", Intent.CREATE_CANVA_DESIGN, "create_canva_design"]:
+                from app.tools.canva_tool import canva_tool
+                canva_payload = canva_tool.execute_open_studio(
+                    identity=identity,
+                    design_type="presentation" if "presentation" in (nlu_result.entities.student_name or "").lower() or intent == Intent.CREATE_CANVA_DESIGN else None
+                )
+                tpl_title = canva_payload.get("template", {}).get("title", "Educational Design")
+                return {
+                    "success": True,
+                    "intent": intent.value if hasattr(intent, "value") else intent,
+                    "data": canva_payload,
+                    "message": f"I've opened the Canva Design Studio for you with the '{tpl_title}' template ready!"
+                }
+
             elif intent in [Intent.GREETING, "greeting"]:
                 role_display = identity.role.value.title()
                 return {

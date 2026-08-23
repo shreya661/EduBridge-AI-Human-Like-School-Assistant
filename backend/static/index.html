@@ -6,7 +6,7 @@
     <title>XYZ AI — Human-Like AI School Assistant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="theme-dark">
@@ -21,6 +21,26 @@
                     <h1 class="brand-title">XYZ AI <span class="badge-role" id="currentRoleBadge">STUDENT</span></h1>
                     <p class="brand-subtitle" id="brandSubtitle">Zero-Trust Role-Aware School Assistant</p>
                 </div>
+            </div>
+
+            <!-- Quick 1-Click Role Switcher -->
+            <div class="header-role-nav" id="headerRoleNav">
+                <button class="role-nav-btn active" data-id="STU10A88F2" data-role="STUDENT" title="Switch to Student Role">
+                    <span class="role-emoji">🎓</span>
+                    <span class="role-nav-text">Student (Rahul)</span>
+                </button>
+                <button class="role-nav-btn" data-id="PAR81L90V7" data-role="PARENT" title="Switch to Parent Role">
+                    <span class="role-emoji">👨‍👩‍👧</span>
+                    <span class="role-nav-text">Parent (Anita)</span>
+                </button>
+                <button class="role-nav-btn" data-id="TCH90K11X4" data-role="TEACHER" title="Switch to Teacher Role">
+                    <span class="role-emoji">👩‍🏫</span>
+                    <span class="role-nav-text">Teacher (Kumar)</span>
+                </button>
+                <button class="role-nav-btn" data-id="PRN10A99X1" data-role="PRINCIPAL" title="Switch to Principal Role">
+                    <span class="role-emoji">🏛️</span>
+                    <span class="role-nav-text">Principal (Dr. Sharma)</span>
+                </button>
             </div>
 
             <div class="header-actions">
@@ -47,19 +67,19 @@
                     <div class="user-pill" id="userProfilePill">
                         <span class="user-avatar-icon" id="userAvatarIcon">🎓</span>
                         <div class="user-meta">
-                            <span class="user-name" id="userDisplayName">Aarav Patel</span>
+                            <span class="user-name" id="userDisplayName">Rahul Patel</span>
                             <span class="user-id-code" id="userDisplayId">STU10A88F2</span>
                         </div>
                     </div>
                     <button class="btn-auth-switch" id="openAuthModalBtn" title="Switch Account / Sign Up">
                         <span class="auth-key-icon">🔑</span>
-                        <span class="auth-btn-label" id="authBtnLabel">Switch / Register</span>
+                        <span class="auth-btn-label" id="authBtnLabel">Accounts</span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Main Workspace -->
+        <!-- Main Workspace Grid -->
         <main class="workspace-grid">
             <!-- Left Pane: AI Avatar & Voice Status -->
             <section class="avatar-pane glass-card" id="avatarPane">
@@ -76,7 +96,7 @@
                     </div>
                 </div>
 
-                <!-- Avatar Character Models Selector -->
+                <!-- Avatar Models Selector -->
                 <div class="avatar-models-picker" id="avatarModelPicker">
                     <button class="avatar-opt-btn active" data-avatar="maya" title="Maya (Academic Specialist)">
                         <span class="avatar-opt-icon">👩‍🏫</span>
@@ -99,7 +119,7 @@
                 <div class="avatar-stage">
                     <div class="avatar-portrait-wrap" id="avatarPortraitWrap">
                         <div class="avatar-glow" id="avatarGlow"></div>
-                        <img src="/static/avatars/maya.jpg" alt="Maya" id="avatarImg" class="avatar-portrait-img">
+                        <img src="/static/avatars/maya.jpg" alt="Maya" id="avatarImg" class="avatar-portrait-img" onerror="this.src='/static/avatars/avatar_placeholder.png'">
                         <div class="avatar-speaking-pulse" id="avatarSpeakingPulse"></div>
                     </div>
                     <div class="audio-visualizer" id="audioVisualizer">
@@ -136,7 +156,7 @@
                 <div class="pane-header">
                     <div class="chat-title-group">
                         <h2 id="chatPaneHeading">Assistant Conversation</h2>
-                        <span class="identity-tag" id="userIdentityTag">Logged in: Aarav Patel (STU10A88F2)</span>
+                        <span class="identity-tag" id="userIdentityTag">Logged in: Rahul Patel (STU10A88F2)</span>
                     </div>
                     <button id="clearChatBtn" class="btn-ghost" title="Clear History">🧹 <span id="clearChatBtnText">Reset</span></button>
                 </div>
@@ -146,7 +166,7 @@
                     <div class="message assistant">
                         <div class="msg-avatar" id="chatAvatarBadge">👩‍🏫</div>
                         <div class="msg-bubble">
-                            <p id="initialGreetingMsg">Hello Aarav Patel! I'm Maya, your academic specialist. How can I help you today?</p>
+                            <p id="initialGreetingMsg">Hello Rahul Patel! I'm Maya, your academic specialist. How can I help you today?</p>
                             <span class="msg-meta">Just now • Authenticated Session</span>
                         </div>
                     </div>
@@ -154,7 +174,7 @@
 
                 <!-- Quick Action Suggestion Chips -->
                 <div class="quick-chips" id="quickChips">
-                    <!-- Populated dynamically -->
+                    <!-- Populated dynamically based on language & role -->
                 </div>
 
                 <!-- Chat Input Box -->
@@ -167,16 +187,24 @@
                 </form>
             </section>
 
-            <!-- Right Pane: Analytics & Security Audit Inspector -->
+            <!-- Right Pane: Role Workspace & Inspector -->
             <section class="inspector-pane glass-card" id="inspectorPane">
                 <div class="pane-tabs">
-                    <button class="tab-btn active" id="tabSecurityBtn" data-tab="securityTab">🛡️ Security & AuthZ</button>
-                    <button class="tab-btn" id="tabScopeBtn" data-tab="scopeTab">👥 Access Scope & Directory</button>
-                    <button class="tab-btn" id="tabAnalyticsBtn" data-tab="analyticsTab">📈 School Analytics</button>
+                    <button class="tab-btn active" id="tabRoleWorkspaceBtn" data-tab="roleWorkspaceTab">📋 Role Hub</button>
+                    <button class="tab-btn" id="tabSecurityBtn" data-tab="securityTab">🛡️ Security Gate</button>
+                    <button class="tab-btn" id="tabAnalyticsBtn" data-tab="analyticsTab">📈 Analytics</button>
                 </div>
 
-                <!-- Tab 1: Security Audit Log -->
-                <div class="tab-content active" id="securityTab">
+                <!-- Tab 1: Dynamic Role Hub (Student, Parent, Teacher, Principal) -->
+                <div class="tab-content active" id="roleWorkspaceTab">
+                    <!-- Dynamic Role Cards Container -->
+                    <div id="dynamicRoleCardContainer">
+                        <!-- Populated dynamically based on role -->
+                    </div>
+                </div>
+
+                <!-- Tab 2: Security Audit Log -->
+                <div class="tab-content" id="securityTab">
                     <div class="sec-banner">
                         <span class="shield-badge">ZERO-TRUST ACTIVE</span>
                         <p class="sec-law" id="secLaw">"LLM interprets language. Application decides authorization."</p>
@@ -193,48 +221,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 2: Role Access Scope & Directory -->
-                <div class="tab-content" id="scopeTab">
-                    <div class="scope-card">
-                        <div class="scope-header-box" id="scopeHeaderBox">
-                            <div class="scope-header-top">
-                                <span class="scope-badge" id="scopeBadge">STUDENT_SELF_ONLY</span>
-                                <button id="btnExportAttendanceCsv" class="btn-export-sm" title="Export Attendance Roster to CSV">📥 Export CSV</button>
-                            </div>
-                            <p class="scope-desc" id="scopeDescription">Students are strictly restricted to accessing their own profile and attendance records.</p>
-                        </div>
-
-                        <div class="scope-section">
-                            <h4 class="sub-heading">My Scoped Permissions</h4>
-                            <div class="permission-chips-grid" id="scopePermissionsList">
-                                <span class="perm-chip">✓ view_own_attendance</span>
-                                <span class="perm-chip">✓ view_own_profile</span>
-                            </div>
-                        </div>
-
-                        <div class="scope-section">
-                            <div class="section-title-with-count">
-                                <h4 class="sub-heading">Accessible Students</h4>
-                                <span class="count-pill" id="scopedStudentCount">1</span>
-                            </div>
-                            <div class="scoped-members-list" id="scopedStudentsList">
-                                <!-- Populated dynamically by app.js -->
-                            </div>
-                        </div>
-
-                        <div class="scope-section" id="scopedTeachersSection">
-                            <div class="section-title-with-count">
-                                <h4 class="sub-heading">Accessible Teachers / Staff</h4>
-                                <span class="count-pill" id="scopedTeacherCount">0</span>
-                            </div>
-                            <div class="scoped-members-list" id="scopedTeachersList">
-                                <!-- Populated dynamically by app.js -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab 3: Principal Analytics -->
+                <!-- Tab 3: School Analytics -->
                 <div class="tab-content" id="analyticsTab">
                     <div class="analytics-card">
                         <div class="stat-group">
@@ -463,48 +450,7 @@
     </div>
 
     <!-- Real-time Parent SMS / WhatsApp Simulator Toast Container -->
-    <div class="sms-toast-container" id="smsToastContainer">
-        <!-- Dynamically populated when alerts are triggered -->
-    </div>
-
-    <!-- Inactivity Auto-Lock Security Overlay -->
-    <div class="lock-overlay hidden" id="lockOverlay">
-        <div class="lock-card glass-card">
-            <div class="lock-icon">🔒</div>
-            <h3>Session Auto-Locked</h3>
-            <p>Your session was secured due to inactivity. Enter your password to resume.</p>
-            <div class="lock-user-pill">
-                <span id="lockUserIcon">🎓</span>
-                <span id="lockUserName">User</span>
-                <small id="lockUserId">STU10A88F2</small>
-            </div>
-            <form id="lockResumeForm">
-                <div class="form-group">
-                    <input type="password" id="lockPasswordInput" placeholder="Enter password to resume" required autofocus>
-                </div>
-                <div class="lock-actions">
-                    <button type="submit" class="btn-primary btn-block">Resume Session</button>
-                    <button type="button" class="btn-secondary btn-block" id="lockSignOutBtn">Sign Out</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Mobile Bottom Navigation Bar -->
-    <nav class="mobile-nav-bar" id="mobileNavBar">
-        <button class="mobile-nav-item" data-pane="avatarPane">
-            <span class="nav-icon">🎙️</span>
-            <span class="nav-label">Avatar</span>
-        </button>
-        <button class="mobile-nav-item active" data-pane="chatPane">
-            <span class="nav-icon">💬</span>
-            <span class="nav-label">Chat</span>
-        </button>
-        <button class="mobile-nav-item" data-pane="inspectorPane">
-            <span class="nav-icon">🛡️</span>
-            <span class="nav-label">Scope</span>
-        </button>
-    </nav>
+    <div class="sms-toast-container" id="smsToastContainer"></div>
 
     <script src="/static/app.js"></script>
 </body>
