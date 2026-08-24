@@ -453,9 +453,6 @@ const LANGUAGE_NAMES = {
 // Initial Setup
 async function init() {
     setupEventListeners();
-    if (typeof CanvaManager !== "undefined") {
-        await CanvaManager.init();
-    }
     await loginUser(currentUser, "Password@123", currentRole);
 }
 
@@ -497,23 +494,53 @@ async function loginUser(userId, password = "Password@123", fallbackRole = "STUD
     }
 }
 
-// Update Top Bar & UI User Pill
+// Update Top Bar & UI User Pill — New sidebar layout
 function updateUserProfileUI(userId, role, name) {
+    // Legacy hidden elements
     if (currentRoleBadge) currentRoleBadge.textContent = role;
     if (userDisplayName) userDisplayName.textContent = name;
     if (userDisplayId) userDisplayId.textContent = userId;
     if (userAvatarIcon) userAvatarIcon.textContent = ROLE_ICONS[role] || "🎓";
-    
+
+    // New sidebar elements
+    const sidebarName = document.getElementById("sidebarName");
+    if (sidebarName) sidebarName.textContent = name;
+
+    const sidebarRoleLabel = document.getElementById("sidebarRoleLabel");
+    const roleLabels = { STUDENT: "Student account", PARENT: "Parent account", TEACHER: "Teacher account", PRINCIPAL: "Principal account" };
+    if (sidebarRoleLabel) sidebarRoleLabel.textContent = roleLabels[role] || (role.charAt(0) + role.slice(1).toLowerCase() + " account");
+
+    const sidebarAvatar = document.getElementById("sidebarAvatar");
+    if (sidebarAvatar) {
+        // Generate initials from name
+        const parts = name.split(" ").filter(Boolean);
+        const initials = parts.length >= 2 ? parts[0][0] + parts[parts.length-1][0] : (parts[0] ? parts[0].slice(0,2) : "U");
+        sidebarAvatar.textContent = initials.toUpperCase();
+        // Role color coding
+        const colors = { STUDENT: "#3d6b5e", PARENT: "#7c3aed", TEACHER: "#dc6b19", PRINCIPAL: "#1e40af" };
+        sidebarAvatar.style.background = colors[role] || "#3d6b5e";
+    }
+
+    // Topbar title
+    const topbarTitle = document.getElementById("chatTopbarTitle");
+    const topbarSubtitles = { STUDENT: "STUDENT ASSISTANT", PARENT: "PARENT SUPPORT ASSISTANT", TEACHER: "TEACHER DESK", PRINCIPAL: "PRINCIPAL COMMAND" };
+    if (topbarTitle) topbarTitle.textContent = topbarSubtitles[role] || "SCHOOL ASSISTANT";
+
     const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
     const ui = langConfig.ui || MULTI_LANG_CONFIG.en.ui;
     if (userIdentityTag) userIdentityTag.textContent = `${ui.loggedInAs}: ${name} (${userId})`;
 }
 
-// Update active highlight in header 1-click role switcher
+// Update active highlight in role switcher (sidebar & header)
 function updateHeaderNavState(userId, role) {
-    document.querySelectorAll(".role-nav-btn").forEach(btn => {
+    // Sidebar role-switch-btn
+    document.querySelectorAll(".role-switch-btn").forEach(btn => {
         const btnRole = btn.dataset.role;
         btn.classList.toggle("active", btnRole === role);
+    });
+    // Legacy role-nav-btn
+    document.querySelectorAll(".role-nav-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.role === role);
     });
 }
 
@@ -587,23 +614,104 @@ function updateLanguageUI(userName) {
 }
 
 function renderChips(chips) {
-    if (!quickChips) return;
-    quickChips.innerHTML = "";
+    const container = document.getElementById("quickChips");
+    if (!container) return;
+    container.innerHTML = "";
     chips.forEach(query => {
         const btn = document.createElement("button");
-        btn.className = "chip";
+        btn.className = "chip-btn";
         btn.textContent = query;
         btn.onclick = () => {
-            chatInput.value = query;
+            if (chatInput) chatInput.value = query;
             sendMessage(query);
         };
-        quickChips.appendChild(btn);
+        container.appendChild(btn);
     });
 }
 
-// Render Dedicated Dynamic Role Hub (Student, Parent, Teacher, Principal)
+// Render Dedicated Dynamic Role Hub inline inside chat area
 function renderDynamicRoleHub(role) {
-    if (!dynamicRoleCardContainer) return;
+    const container = document.getElementById("roleHubInlineContainer");
+    if (!container) return;
+    // Keep the old sidebar container empty
+    if (dynamicRoleCardContainer) dynamicRoleCardContainer.innerHTML = "";
+
+    const avatarChar = AVATAR_CHARACTERS[currentAvatarCharacter] || AVATAR_CHARACTERS.maya;
+
+    if (role === "STUDENT") {
+        container.innerHTML = `
+            <div class="hub-inline-section">
+                <div class="hub-inline-section-header">
+                    <span class="hub-inline-section-title">Quick Student Actions</span>
+                    <span style="font-size:12px;color:var(--accent);font-weight:600">92.5% Attendance</span>
+                </div>
+                <button class="hub-action-btn" onclick="sendCustomQuery('What is my attendance?')"><span>📊 View My Attendance</span><span class="btn-arrow">→</span></button>
+                <button class="hub-action-btn" onclick="sendCustomQuery('Can I connect with my class teacher?')"><span>👩‍🏫 Request Teacher Consultation</span><span class="btn-arrow">→</span></button>
+                <button class="hub-action-btn" onclick="sendCustomQuery('What is the schedule for tomorrow?')"><span>📅 Check Tomorrow's Schedule</span><span class="btn-arrow">→</span></button>
+            </div>
+        `;
+    } else if (role === "PARENT") {
+        container.innerHTML = `
+            <div style="margin-bottom:6px;font-size:12px;color:var(--text-subtle)">Which child would you like attendance details for?</div>
+            <div class="entity-cards-row">
+                <div class="entity-card" onclick="sendCustomQuery('How is Rahul\'s attendance?')">
+                    <div class="entity-card-avatar" style="background:#3d6b5e">RP</div>
+                    <div class="entity-card-info">
+                        <div class="entity-card-name">Rahul Patel</div>
+                        <div class="entity-card-sub">Year 10-A</div>
+                    </div>
+                    <div class="entity-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+                </div>
+                <div class="entity-card" onclick="sendCustomQuery('How is Arjun\'s attendance?')">
+                    <div class="entity-card-avatar" style="background:#7c3aed">AP</div>
+                    <div class="entity-card-info">
+                        <div class="entity-card-name">Arjun Patel</div>
+                        <div class="entity-card-sub">Year 10-B</div>
+                    </div>
+                    <div class="entity-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+                </div>
+            </div>
+            <div class="hub-inline-section" style="margin-top:8px">
+                <button class="hub-action-btn" onclick="sendCustomQuery('I want to talk to my child\'s teacher')"><span>📞 Contact Class Teacher</span><span class="btn-arrow">→</span></button>
+            </div>
+        `;
+    } else if (role === "TEACHER") {
+        container.innerHTML = `
+            <div class="hub-inline-section">
+                <div class="hub-inline-section-header">
+                    <span class="hub-inline-section-title">Live Attendance — Class 10-A</span>
+                </div>
+                <div class="hub-student-row"><div class="hub-student-info"><div class="hub-student-name">Rahul Patel</div><div class="hub-student-meta">Roll #01</div></div><div class="hub-mark-btn-group"><button class="btn-mark-sm present" onclick="sendCustomQuery('Mark Rahul present today')">Present</button><button class="btn-mark-sm absent" onclick="sendCustomQuery('Mark Rahul absent today')">Absent</button></div></div>
+                <div class="hub-student-row"><div class="hub-student-info"><div class="hub-student-name">Priya Sharma</div><div class="hub-student-meta">Roll #02</div></div><div class="hub-mark-btn-group"><button class="btn-mark-sm present" onclick="sendCustomQuery('Mark Priya present today')">Present</button><button class="btn-mark-sm absent" onclick="sendCustomQuery('Mark Priya absent today')">Absent</button></div></div>
+                <div class="hub-student-row"><div class="hub-student-info"><div class="hub-student-name">Aarav Gupta</div><div class="hub-student-meta">Roll #03</div></div><div class="hub-mark-btn-group"><button class="btn-mark-sm present" onclick="sendCustomQuery('Mark Aarav present today')">Present</button><button class="btn-mark-sm absent" onclick="sendCustomQuery('Mark Aarav absent today')">Absent</button></div></div>
+                <button class="hub-action-btn" onclick="sendCustomQuery('Show Class 10-A attendance roster')"><span>📋 View Full Roster</span><span class="btn-arrow">→</span></button>
+            </div>
+        `;
+    } else if (role === "PRINCIPAL") {
+        container.innerHTML = `
+            <div class="hub-inline-section">
+                <div class="hub-inline-section-header">
+                    <span class="hub-inline-section-title">Executive Analytics</span>
+                    <span style="font-size:12px;color:var(--accent);font-weight:600">450 Students</span>
+                </div>
+                <button class="hub-action-btn" onclick="sendCustomQuery('What is the overall attendance?')"><span>📈 Overall School Attendance Rate</span><span class="btn-arrow">→</span></button>
+                <button class="hub-action-btn" onclick="sendCustomQuery('Which students have low attendance?')"><span>⚠️ Flagged Students (&lt;75%)</span><span class="btn-arrow">→</span></button>
+                <button class="hub-action-btn" onclick="sendCustomQuery('Show school attendance overview')"><span>📊 Class-by-Class Comparison</span><span class="btn-arrow">→</span></button>
+            </div>
+        `;
+    } else {
+        container.innerHTML = "";
+    }
+}
+
+// Send custom query helper for buttons
+window.sendCustomQuery = function(text) {
+    if (chatInput) chatInput.value = text;
+    sendMessage(text);
+};
+
+// DELETED OLD renderDynamicRoleHub — replaced above
+function _oldRenderRoleHub_UNUSED(role) {
 
     if (role === "STUDENT") {
         dynamicRoleCardContainer.innerHTML = `
@@ -841,6 +949,64 @@ function appendMessage(sender, text) {
     const msgDiv = document.createElement("div");
     msgDiv.className = `message ${sender}`;
 
+    const avatarChar = AVATAR_CHARACTERS[currentAvatarCharacter] || AVATAR_CHARACTERS.maya;
+
+    if (sender === "assistant") {
+        // AI avatar badge
+        const aiAvatar = document.createElement("div");
+        aiAvatar.className = "msg-ai-avatar";
+        aiAvatar.textContent = avatarChar.icon;
+        msgDiv.appendChild(aiAvatar);
+
+        const content = document.createElement("div");
+        content.className = "msg-content";
+
+        const senderName = document.createElement("div");
+        senderName.className = "msg-sender-name";
+        senderName.textContent = avatarChar.name.split(" — ")[0];
+        content.appendChild(senderName);
+
+        const bubble = document.createElement("div");
+        bubble.className = "msg-bubble ai";
+        bubble.innerHTML = escapeHTML(text).replace(/\n/g, "<br>");
+        content.appendChild(bubble);
+
+        const time = document.createElement("div");
+        time.className = "msg-time";
+        time.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        content.appendChild(time);
+
+        msgDiv.appendChild(content);
+    } else {
+        // User message
+        const content = document.createElement("div");
+        content.className = "msg-content";
+
+        const youLabel = document.createElement("div");
+        youLabel.className = "msg-you-label";
+        youLabel.textContent = `You  ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+        content.appendChild(youLabel);
+
+        const bubble = document.createElement("div");
+        bubble.className = "msg-bubble user";
+        bubble.innerHTML = escapeHTML(text).replace(/\n/g, "<br>");
+        content.appendChild(bubble);
+
+        msgDiv.appendChild(content);
+    }
+
+    const chatMsgs = document.getElementById("chatMessages");
+    if (chatMsgs) {
+        chatMsgs.appendChild(msgDiv);
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+    return msgDiv;
+}
+
+function _appendMessage_UNUSED(sender, text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `message ${sender}`;
+
     const avatar = document.createElement("div");
     avatar.className = "msg-avatar";
     avatar.textContent = sender === "user" ? (ROLE_ICONS[currentRole] || "👤") : "🤖";
@@ -934,14 +1100,14 @@ function logAuditEvent(role, intent, allowed, reason) {
 
 // Event Listeners
 function setupEventListeners() {
-    // 1. Header 1-Click Role Switcher
-    document.querySelectorAll(".role-nav-btn").forEach(btn => {
+    // 1. Role Switcher (sidebar + header)
+    document.querySelectorAll(".role-nav-btn, .role-switch-btn").forEach(btn => {
         btn.onclick = async () => {
             const role = btn.dataset.role;
             const demo = DEMO_USERS[role];
             if (demo) {
                 await loginUser(demo.id, "Password@123", role);
-                
+
                 const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
                 const greeting = langConfig.greeting(demo.name, role);
                 appendMessage("assistant", greeting);
@@ -974,12 +1140,16 @@ function setupEventListeners() {
         };
     }
 
-    // 4. Reset Chat Button
+    // 4. Reset Chat Button (New Conversation)
     if (clearChatBtn) {
         clearChatBtn.onclick = () => {
-            chatMessages.innerHTML = "";
+            const msgs = document.getElementById("chatMessages");
+            if (msgs) msgs.innerHTML = "";
             const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
             appendMessage("assistant", langConfig.greeting(currentUserName, currentRole));
+            // Reset subtitle
+            const sub = document.getElementById("chatTopbarSubtitle");
+            if (sub) sub.textContent = "New conversation";
         };
     }
 
@@ -987,13 +1157,15 @@ function setupEventListeners() {
     if (openAuthModalBtn) {
         openAuthModalBtn.onclick = () => {
             hideAuthAlert();
-            authModal.classList.add("open");
+            const modal = document.getElementById("authModal");
+            if (modal) modal.classList.add("active");
         };
     }
 
     if (closeAuthModalBtn) {
         closeAuthModalBtn.onclick = () => {
-            authModal.classList.remove("open");
+            const modal = document.getElementById("authModal");
+            if (modal) modal.classList.remove("active");
         };
     }
 

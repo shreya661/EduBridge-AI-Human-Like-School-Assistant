@@ -4,50 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XYZ AI — Human-Like AI School Assistant</title>
+    <meta name="description" content="XYZ AI: A human-like AI school assistant for students, parents, teachers, and principals. Role-aware, multilingual, and secure.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body class="theme-dark">
-    <div class="app-container">
-        <!-- Top Navigation Bar -->
-        <header class="app-header">
-            <div class="header-brand">
-                <div class="brand-logo">
-                    <span class="logo-icon">✨</span>
+<body>
+    <!-- App Shell: two-pane layout -->
+    <div class="app-shell">
+
+        <!-- ============================================================
+             LEFT SIDEBAR
+        ============================================================ -->
+        <aside class="sidebar" id="sidebar">
+
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <div class="logo-mark">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
-                <div>
-                    <h1 class="brand-title">XYZ AI <span class="badge-role" id="currentRoleBadge">STUDENT</span></h1>
-                    <p class="brand-subtitle" id="brandSubtitle">Zero-Trust Role-Aware School Assistant</p>
-                </div>
+                <span class="logo-text">xyzai</span>
             </div>
 
-            <!-- Quick 1-Click Role Switcher -->
-            <div class="header-role-nav" id="headerRoleNav">
-                <button class="role-nav-btn active" data-id="STU10A88F2" data-role="STUDENT" title="Switch to Student Role">
-                    <span class="role-emoji">🎓</span>
-                    <span class="role-nav-text">Student (Rahul)</span>
-                </button>
-                <button class="role-nav-btn" data-id="PAR81L90V7" data-role="PARENT" title="Switch to Parent Role">
-                    <span class="role-emoji">👨‍👩‍👧</span>
-                    <span class="role-nav-text">Parent (Anita)</span>
-                </button>
-                <button class="role-nav-btn" data-id="TCH90K11X4" data-role="TEACHER" title="Switch to Teacher Role">
-                    <span class="role-emoji">👩‍🏫</span>
-                    <span class="role-nav-text">Teacher (Kumar)</span>
-                </button>
-                <button class="role-nav-btn" data-id="PRN10A99X1" data-role="PRINCIPAL" title="Switch to Principal Role">
-                    <span class="role-emoji">🏛️</span>
-                    <span class="role-nav-text">Principal (Dr. Sharma)</span>
+            <!-- Current User Profile -->
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar" id="sidebarAvatar">MR</div>
+                <div class="user-info">
+                    <div class="user-full-name" id="sidebarName">Loading...</div>
+                    <div class="user-role-label" id="sidebarRoleLabel">Student account</div>
+                </div>
+                <button class="user-menu-btn" id="openAuthModalBtn" title="Switch account">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                 </button>
             </div>
 
-            <div class="header-actions">
-                <!-- Language Selector -->
-                <div class="select-wrapper">
-                    <span class="select-icon">🌐</span>
-                    <select id="languageSelect" class="custom-select" aria-label="Language Selector">
+            <!-- New Conversation -->
+            <button class="btn-new-convo" id="clearChatBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span id="newConvoBtnText">New conversation</span>
+                <kbd>N</kbd>
+            </button>
+
+            <!-- YOUR SPACE nav -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">YOUR SPACE</div>
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" id="navAssistant">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+                        <span id="navAssistantText">Assistant</span>
+                        <div class="nav-badge-dot"></div>
+                    </a>
+                    <a href="#" class="nav-item" id="navCalendar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span id="navCalendarText">School calendar</span>
+                    </a>
+                    <a href="#" class="nav-item" id="navGuides">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <span id="navGuidesText">Role guides</span>
+                    </a>
+                    <a href="#" class="nav-item" id="navAnalytics">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span id="navAnalyticsText">Analytics</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Language Selector -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">LANGUAGE</div>
+                <div class="lang-select-wrap">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <select id="languageSelect" class="lang-select" aria-label="Language Selector">
                         <option value="en">English</option>
                         <option value="gu">ગુજરાતી (Gujarati)</option>
                         <option value="hi">हिंदी (Hindi)</option>
@@ -61,198 +89,180 @@
                         <option value="ur">اردو (Urdu)</option>
                     </select>
                 </div>
+            </div>
 
-                <!-- User Profile & Auth Trigger -->
-                <div class="user-auth-panel" id="userAuthPanel">
-                    <div class="user-pill" id="userProfilePill">
-                        <span class="user-avatar-icon" id="userAvatarIcon">🎓</span>
-                        <div class="user-meta">
-                            <span class="user-name" id="userDisplayName">Rahul Patel</span>
-                            <span class="user-id-code" id="userDisplayId">STU10A88F2</span>
-                        </div>
-                    </div>
-                    <button class="btn-auth-switch" id="openAuthModalBtn" title="Switch Account / Sign Up">
-                        <span class="auth-key-icon">🔑</span>
-                        <span class="auth-btn-label" id="authBtnLabel">Accounts</span>
+            <!-- Role Switcher -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">SWITCH ROLE</div>
+                <div class="role-switcher" id="headerRoleNav">
+                    <button class="role-switch-btn active" data-id="STU10A88F2" data-role="STUDENT">
+                        <span class="role-switch-emoji">🎓</span>
+                        <span class="role-switch-label">Student</span>
+                    </button>
+                    <button class="role-switch-btn" data-id="PAR81L90V7" data-role="PARENT">
+                        <span class="role-switch-emoji">👨‍👩‍👧</span>
+                        <span class="role-switch-label">Parent</span>
+                    </button>
+                    <button class="role-switch-btn" data-id="TCH90K11X4" data-role="TEACHER">
+                        <span class="role-switch-emoji">👩‍🏫</span>
+                        <span class="role-switch-label">Teacher</span>
+                    </button>
+                    <button class="role-switch-btn" data-id="PRN10A99X1" data-role="PRINCIPAL">
+                        <span class="role-switch-emoji">🏛️</span>
+                        <span class="role-switch-label">Principal</span>
                     </button>
                 </div>
             </div>
-        </header>
 
-        <!-- Main Workspace Grid -->
-        <main class="workspace-grid">
-            <!-- Left Pane: AI Avatar & Voice Status -->
-            <section class="avatar-pane glass-card" id="avatarPane">
-                <div class="pane-header">
-                    <h2 id="avatarPaneHeading">Interactive AI Avatar</h2>
-                    <div class="pane-header-controls">
-                        <button id="toggleAudioMuteBtn" class="btn-icon-sm" title="Mute / Unmute Voice" aria-label="Toggle Mute">🔊</button>
-                        <select id="voiceSpeedSelect" class="select-sm" title="Speech Speed">
-                            <option value="0.8">0.8x</option>
-                            <option value="1.0" selected>1.0x</option>
-                            <option value="1.2">1.2x</option>
+            <!-- Recent Conversations -->
+            <div class="sidebar-section sidebar-recent">
+                <div class="sidebar-section-header">
+                    <div class="sidebar-section-title">RECENT CONVERSATIONS</div>
+                    <button class="btn-link" style="font-size:11px;color:var(--text-subtle)">All</button>
+                </div>
+                <div class="search-wrap">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="search-input" placeholder="Search conversations" id="convoSearchInput">
+                </div>
+                <div class="recent-list" id="recentConvoList">
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Attendance enquiry</span>
+                            <span class="recent-item-time">Today</span>
+                        </div>
+                    </button>
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Timetable question</span>
+                            <span class="recent-item-time">Yesterday</span>
+                        </div>
+                    </button>
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Exam schedule</span>
+                            <span class="recent-item-time">Mon</span>
+                        </div>
+                    </button>
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Your information is handled with care</span>
+                            <span class="recent-item-time">Fri</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ============================================================
+             MAIN CONTENT: CHAT AREA
+        ============================================================ -->
+        <main class="chat-main" id="chatPane">
+
+            <!-- Chat Top Bar -->
+            <header class="chat-topbar">
+                <div class="chat-topbar-left">
+                    <div class="chat-topbar-title" id="chatTopbarTitle">STUDENT ASSISTANT</div>
+                    <div class="chat-topbar-subtitle" id="chatTopbarSubtitle">New conversation</div>
+                </div>
+                <div class="chat-topbar-right">
+                    <div class="status-available">
+                        <div class="status-dot"></div>
+                        <span id="availableText">Available to help</span>
+                    </div>
+                    <button class="topbar-icon-btn" title="Notifications">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </button>
+                    <button class="topbar-icon-btn" id="topbarMenuBtn" title="More options">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                    </button>
+
+                    <!-- Avatar persona picker dropdown -->
+                    <div class="avatar-select-wrap">
+                        <select id="avatarPersonaSelect" class="avatar-persona-select" title="Switch AI persona">
+                            <option value="maya">👩‍🏫 Maya</option>
+                            <option value="vikram">👨‍🏫 Vikram</option>
+                            <option value="priya">👩‍💼 Priya</option>
+                            <option value="nova">🤖 Nova</option>
                         </select>
-                        <span class="status-indicator online" id="liveReadyStatus">Live Ready</span>
+                    </div>
+
+                    <!-- Mute / speed controls -->
+                    <button id="toggleAudioMuteBtn" class="topbar-icon-btn" title="Toggle voice">
+                        <svg id="muteIconSvg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    </button>
+                    <select id="voiceSpeedSelect" class="speed-select" title="Speech speed">
+                        <option value="0.8">0.8×</option>
+                        <option value="1.0" selected>1.0×</option>
+                        <option value="1.2">1.2×</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Date separator -->
+            <div class="date-separator">
+                <span>TODAY</span>
+            </div>
+
+            <!-- Chat messages list -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Initial greeting, populated by JS -->
+                <div class="message assistant" id="initialGreetingRow">
+                    <div class="msg-ai-avatar" id="chatAvatarBadge">👩‍🏫</div>
+                    <div class="msg-content">
+                        <div class="msg-sender-name" id="aiSenderName">Sam</div>
+                        <div class="msg-bubble ai" id="initialGreetingMsg">Hello! I'm your school assistant. How can I help you today?</div>
+                        <div class="msg-time">Just now</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Avatar Models Selector -->
-                <div class="avatar-models-picker" id="avatarModelPicker">
-                    <button class="avatar-opt-btn active" data-avatar="maya" title="Maya (Academic Specialist)">
-                        <span class="avatar-opt-icon">👩‍🏫</span>
-                        <span class="avatar-opt-name">Maya</span>
-                    </button>
-                    <button class="avatar-opt-btn" data-avatar="vikram" title="Vikram (Senior Mentor)">
-                        <span class="avatar-opt-icon">👨‍🏫</span>
-                        <span class="avatar-opt-name">Vikram</span>
-                    </button>
-                    <button class="avatar-opt-btn" data-avatar="priya" title="Dr. Priya (Counselor)">
-                        <span class="avatar-opt-icon">👩‍💼</span>
-                        <span class="avatar-opt-name">Priya</span>
-                    </button>
-                    <button class="avatar-opt-btn" data-avatar="nova" title="Nova (Cyber AI)">
-                        <span class="avatar-opt-icon">🤖</span>
-                        <span class="avatar-opt-name">Nova</span>
-                    </button>
+            <!-- Role Hub cards (child selectors, quick actions etc.) injected here by JS -->
+            <div id="roleHubInlineContainer"></div>
+
+            <!-- Quick Chips -->
+            <div class="quick-chips-bar" id="quickChips"></div>
+
+            <!-- Input bar -->
+            <div class="chat-input-area">
+                <div class="privacy-note" id="privacyNote">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span id="privacyNoteText">Your school information is handled securely.</span>
                 </div>
-
-                <div class="avatar-stage">
-                    <div class="avatar-portrait-wrap" id="avatarPortraitWrap">
-                        <div class="avatar-glow" id="avatarGlow"></div>
-                        <img src="/static/avatars/maya.jpg" alt="Maya" id="avatarImg" class="avatar-portrait-img" onerror="this.src='/static/avatars/avatar_placeholder.png'">
-                        <div class="avatar-speaking-pulse" id="avatarSpeakingPulse"></div>
-                    </div>
-                    <div class="audio-visualizer" id="audioVisualizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="avatar-controls">
-                    <div class="persona-tag" id="activePersonaCard">
-                        <span class="persona-icon" id="personaIcon">👩‍🏫</span>
-                        <div class="persona-info">
-                            <div class="persona-name" id="personaName">Maya — Academic Specialist</div>
-                            <div class="persona-tone" id="personaTone">Empathetic • Encouraging • Precise</div>
-                        </div>
-                    </div>
-
-                    <div class="voice-action-bar">
-                        <button id="voiceRecordBtn" class="btn-voice">
-                            <span class="mic-icon">🎙️</span>
-                            <span id="voiceBtnText">Hold to Speak</span>
+                <form class="chat-input-form" id="chatForm">
+                    <div class="input-row">
+                        <button type="button" id="voiceRecordBtn" class="input-voice-btn" title="Hold to speak">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                         </button>
-                        <button id="escalateBtn" class="btn-escalate">
-                            <span class="esc-icon">📞</span>
-                            <span id="escalateBtnText">Escalate to Human</span>
+                        <input
+                            type="text"
+                            id="chatInput"
+                            class="chat-input"
+                            placeholder="Ask anything about school..."
+                            autocomplete="off"
+                            id="chatInput"
+                        >
+                        <button type="button" id="escalateBtn" class="input-escalate-btn" title="Escalate to human">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
+                        </button>
+                        <button type="submit" class="input-send-btn" id="sendBtn" aria-label="Send">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         </button>
                     </div>
-                </div>
-            </section>
-
-            <!-- Center Pane: Chat & Intelligence Stream -->
-            <section class="chat-pane glass-card" id="chatPane">
-                <div class="pane-header">
-                    <div class="chat-title-group">
-                        <h2 id="chatPaneHeading">Assistant Conversation</h2>
-                        <span class="identity-tag" id="userIdentityTag">Logged in: Rahul Patel (STU10A88F2)</span>
-                    </div>
-                    <button id="clearChatBtn" class="btn-ghost" title="Clear History">🧹 <span id="clearChatBtnText">Reset</span></button>
-                </div>
-
-                <!-- Chat Message List -->
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message assistant">
-                        <div class="msg-avatar" id="chatAvatarBadge">👩‍🏫</div>
-                        <div class="msg-bubble">
-                            <p id="initialGreetingMsg">Hello Rahul Patel! I'm Maya, your academic specialist. How can I help you today?</p>
-                            <span class="msg-meta">Just now • Authenticated Session</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Action Suggestion Chips -->
-                <div class="quick-chips" id="quickChips">
-                    <!-- Populated dynamically based on language & role -->
-                </div>
-
-                <!-- Chat Input Box -->
-                <form class="chat-input-bar" id="chatForm">
-                    <input type="text" id="chatInput" placeholder="Type a school request or hold to speak..." autocomplete="off">
-                    <button type="submit" class="btn-send" id="sendBtn" aria-label="Send Message">
-                        <span id="sendBtnSpan">Send</span>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                    </button>
                 </form>
-            </section>
+            </div>
 
-            <!-- Right Pane: Role Workspace & Inspector -->
-            <section class="inspector-pane glass-card" id="inspectorPane">
-                <div class="pane-tabs">
-                    <button class="tab-btn active" id="tabRoleWorkspaceBtn" data-tab="roleWorkspaceTab">📋 Role Hub</button>
-                    <button class="tab-btn" id="tabSecurityBtn" data-tab="securityTab">🛡️ Security Gate</button>
-                    <button class="tab-btn" id="tabAnalyticsBtn" data-tab="analyticsTab">📈 Analytics</button>
-                </div>
-
-                <!-- Tab 1: Dynamic Role Hub (Student, Parent, Teacher, Principal) -->
-                <div class="tab-content active" id="roleWorkspaceTab">
-                    <!-- Dynamic Role Cards Container -->
-                    <div id="dynamicRoleCardContainer">
-                        <!-- Populated dynamically based on role -->
-                    </div>
-                </div>
-
-                <!-- Tab 2: Security Audit Log -->
-                <div class="tab-content" id="securityTab">
-                    <div class="sec-banner">
-                        <span class="shield-badge">ZERO-TRUST ACTIVE</span>
-                        <p class="sec-law" id="secLaw">"LLM interprets language. Application decides authorization."</p>
-                    </div>
-
-                    <div class="audit-stream" id="auditStream">
-                        <div class="audit-item allowed">
-                            <span class="audit-badge">ALLOWED</span>
-                            <div class="audit-details">
-                                <span class="audit-intent">view_own_attendance</span>
-                                <span class="audit-reason">Role STUDENT owns target resource</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab 3: School Analytics -->
-                <div class="tab-content" id="analyticsTab">
-                    <div class="analytics-card">
-                        <div class="stat-group">
-                            <div class="stat-box">
-                                <span class="stat-val">92.4%</span>
-                                <span class="stat-lbl">School Average</span>
-                            </div>
-                            <div class="stat-box">
-                                <span class="stat-val">450</span>
-                                <span class="stat-lbl">Total Students</span>
-                            </div>
-                        </div>
-                        <h4 class="sub-heading">Class Attendance Breakdown</h4>
-                        <div class="class-breakdown">
-                            <div class="class-row"><span>Class 10-A</span><span class="pct">94.2%</span></div>
-                            <div class="class-row"><span>Class 10-B</span><span class="pct">90.0%</span></div>
-                            <div class="class-row"><span>Class 9-A</span><span class="pct">93.3%</span></div>
-                            <div class="class-row"><span>Class 9-B</span><span class="pct">91.5%</span></div>
-                        </div>
-                        <h4 class="sub-heading">Flagged for Follow-up</h4>
-                        <div class="flagged-list">
-                            <div class="flagged-item">
-                                <span class="flag-name">Priya Sharma (10-A)</span>
-                                <span class="flag-badge">74.5% Attendance</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
-    </div>
+
+    </div><!-- end app-shell -->
+
+    <!-- ============================================================
+         MODALS
+    ============================================================ -->
 
     <!-- Escalation Modal -->
     <div class="modal-overlay" id="escalationModal">
@@ -263,7 +273,7 @@
             </div>
             <div class="modal-body">
                 <label>Escalation Target</label>
-                <select id="escTargetSelect" class="custom-select">
+                <select id="escTargetSelect" class="modal-select">
                     <option value="teacher">Class Teacher / Subject Staff</option>
                     <option value="management">School Principal / Administration</option>
                 </select>
@@ -271,8 +281,8 @@
                 <textarea id="escReasonInput" rows="3" placeholder="Explain the context for urgent callback..."></textarea>
             </div>
             <div class="modal-footer">
-                <button class="btn-ghost" id="cancelEscBtn">Cancel</button>
-                <button class="btn-primary" id="confirmEscBtn">Submit Request</button>
+                <button class="modal-btn-ghost" id="cancelEscBtn">Cancel</button>
+                <button class="modal-btn-primary" id="confirmEscBtn">Submit Request</button>
             </div>
         </div>
     </div>
@@ -285,50 +295,43 @@
                     <span class="auth-icon">🛡️</span>
                     <div>
                         <h3 id="authModalHeading">School Portal Authentication</h3>
-                        <p class="auth-sub">Role-Aware Access with 10-Character Mixed Alphanumeric IDs</p>
+                        <p class="auth-sub">Role-Aware Access · 10-Character Mixed Alphanumeric IDs</p>
                     </div>
                 </div>
                 <button class="modal-close" id="closeAuthModalBtn">&times;</button>
             </div>
-            
-            <!-- Tabs: Login vs Register -->
+
             <div class="auth-tabs">
                 <button class="auth-tab-btn active" id="tabLoginBtn" data-tab="login">Sign In</button>
                 <button class="auth-tab-btn" id="tabSignupBtn" data-tab="signup">New Registration</button>
             </div>
 
             <div class="modal-body">
-                <!-- Notification / Feedback banner -->
                 <div class="auth-alert hidden" id="authAlert"></div>
 
                 <!-- LOGIN FORM -->
-                <form id="loginForm" class="auth-form active">
+                <form id="loginForm" class="auth-form">
                     <div class="form-group">
-                        <label for="loginUserId">10-Character Role ID or Email</label>
+                        <label for="loginUserId">Role ID or Email</label>
                         <div class="input-with-icon">
                             <span class="field-icon">🆔</span>
-                            <input type="text" id="loginUserId" placeholder="e.g. STU10A88F2, TCH90K11X4, PAR81L90V7" required autocomplete="username">
+                            <input type="text" id="loginUserId" placeholder="e.g. STU10A88F2, TCH90K11X4" required autocomplete="username">
                         </div>
                         <small class="field-hint">Format: 10 chars (STU..., TCH..., PAR..., PRN...)</small>
                     </div>
-
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
                         <div class="input-with-icon">
                             <span class="field-icon">🔒</span>
-                            <input type="password" id="loginPassword" placeholder="Enter password (default: Password@123)" required autocomplete="current-password">
+                            <input type="password" id="loginPassword" placeholder="Password@123" required autocomplete="current-password">
                             <button type="button" class="btn-toggle-pw" id="toggleLoginPwBtn" tabindex="-1">👁️</button>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn-primary btn-block" id="submitLoginBtn">
-                        <span>Secure Sign In</span>
-                        <span class="arrow-icon">→</span>
+                    <button type="submit" class="modal-btn-primary btn-block" id="submitLoginBtn">
+                        Secure Sign In →
                     </button>
-
-                    <!-- 1-Click Quick Demo Accounts -->
                     <div class="demo-accounts-section">
-                        <div class="demo-title"><span>Or Quick 1-Click Demo Sign-in:</span></div>
+                        <div class="demo-title">Quick 1-Click Demo:</div>
                         <div class="demo-chips-grid">
                             <button type="button" class="demo-chip" data-id="STU10A88F2" data-pw="Password@123">
                                 <span class="chip-icon">🎓</span>
@@ -357,48 +360,30 @@
                         <div class="role-cards-grid">
                             <label class="role-card-opt active" data-role="STUDENT">
                                 <input type="radio" name="signupRole" value="STUDENT" checked>
-                                <div class="card-content">
-                                    <span class="card-emoji">🎓</span>
-                                    <span class="card-label">Student</span>
-                                    <span class="card-prefix-tag">STU + 7 chars</span>
-                                </div>
+                                <div class="card-content"><span class="card-emoji">🎓</span><span class="card-label">Student</span><span class="card-prefix-tag">STU + 7 chars</span></div>
                             </label>
                             <label class="role-card-opt" data-role="TEACHER">
                                 <input type="radio" name="signupRole" value="TEACHER">
-                                <div class="card-content">
-                                    <span class="card-emoji">👩‍🏫</span>
-                                    <span class="card-label">Teacher</span>
-                                    <span class="card-prefix-tag">TCH + 7 chars</span>
-                                </div>
+                                <div class="card-content"><span class="card-emoji">👩‍🏫</span><span class="card-label">Teacher</span><span class="card-prefix-tag">TCH + 7 chars</span></div>
                             </label>
                             <label class="role-card-opt" data-role="PARENT">
                                 <input type="radio" name="signupRole" value="PARENT">
-                                <div class="card-content">
-                                    <span class="card-emoji">👨‍👩‍👧</span>
-                                    <span class="card-label">Parent</span>
-                                    <span class="card-prefix-tag">PAR + 7 chars</span>
-                                </div>
+                                <div class="card-content"><span class="card-emoji">👨‍👩‍👧</span><span class="card-label">Parent</span><span class="card-prefix-tag">PAR + 7 chars</span></div>
                             </label>
                             <label class="role-card-opt" data-role="PRINCIPAL">
                                 <input type="radio" name="signupRole" value="PRINCIPAL">
-                                <div class="card-content">
-                                    <span class="card-emoji">🏛️</span>
-                                    <span class="card-label">Principal</span>
-                                    <span class="card-prefix-tag">PRN + 7 chars</span>
-                                </div>
+                                <div class="card-content"><span class="card-emoji">🏛️</span><span class="card-label">Principal</span><span class="card-prefix-tag">PRN + 7 chars</span></div>
                             </label>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label for="signupName">Full Legal Name</label>
+                        <label for="signupName">Full Name</label>
                         <input type="text" id="signupName" placeholder="e.g. Aarav Sharma" required>
                     </div>
-
                     <div class="form-group">
                         <div class="label-with-action">
-                            <label for="signupUserId">10-Character Mixed Alphanumeric ID</label>
-                            <button type="button" class="btn-inline-gen" id="btnAutoGenerateId">🎲 Auto-Generate ID</button>
+                            <label for="signupUserId">10-Character ID</label>
+                            <button type="button" class="btn-inline-gen" id="btnAutoGenerateId">🎲 Auto-Generate</button>
                         </div>
                         <div class="input-with-icon">
                             <span class="field-icon">🆔</span>
@@ -408,16 +393,14 @@
                             Format: 3-char prefix (<strong id="idFormatPrefix">STU</strong>) + 7 letters/digits = 10 characters
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="signupEmail">Email Address (Optional)</label>
                         <input type="email" id="signupEmail" placeholder="user@school.edu">
                     </div>
-
                     <div class="form-row" id="roleSpecificFields">
                         <div class="form-group flex-1" id="classSelectGroup">
                             <label for="signupClassId">Class / Section</label>
-                            <select id="signupClassId" class="custom-select">
+                            <select id="signupClassId" class="modal-select">
                                 <option value="10-A">Class 10-A</option>
                                 <option value="10-B">Class 10-B</option>
                                 <option value="9-A">Class 9-A</option>
@@ -426,11 +409,10 @@
                             </select>
                         </div>
                         <div class="form-group flex-1 hidden" id="childLinkGroup">
-                            <label for="signupChildId">Child's Student ID (10-char)</label>
+                            <label for="signupChildId">Child's Student ID</label>
                             <input type="text" id="signupChildId" placeholder="e.g. STU10A88F2">
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
                         <div class="input-with-icon">
@@ -439,18 +421,63 @@
                             <button type="button" class="btn-toggle-pw" id="toggleSignupPwBtn" tabindex="-1">👁️</button>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn-primary btn-block" id="submitSignupBtn">
-                        <span>Create Account & Sign In</span>
-                        <span class="arrow-icon">✓</span>
+                    <button type="submit" class="modal-btn-primary btn-block" id="submitSignupBtn">
+                        Create Account & Sign In ✓
                     </button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Real-time Parent SMS / WhatsApp Simulator Toast Container -->
+    <!-- Inactivity Lock Overlay -->
+    <div class="lock-overlay hidden" id="lockOverlay">
+        <div class="lock-card">
+            <div class="lock-icon">🔒</div>
+            <h3>Session Locked</h3>
+            <p>Locked due to inactivity. Please re-authenticate to continue.</p>
+            <div class="lock-user-pill">
+                <span id="lockUserName">Rahul Patel</span>
+                <small id="lockUserId">STU10A88F2</small>
+            </div>
+            <div class="lock-actions">
+                <button class="modal-btn-primary" id="unlockResumeBtn">Resume Session</button>
+                <button class="modal-btn-ghost" id="unlockSwitchBtn">Switch Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS / Toast container -->
     <div class="sms-toast-container" id="smsToastContainer"></div>
+
+    <!-- Hidden legacy elements (kept for JS compatibility) -->
+    <div style="display:none">
+        <input id="avatarModelPicker" type="hidden">
+        <img id="avatarImg" alt="avatar">
+        <div id="avatarGlow"></div>
+        <div id="avatarSpeakingPulse"></div>
+        <div id="audioVisualizer"></div>
+        <div id="personaIcon"></div>
+        <div id="personaName"></div>
+        <div id="personaTone"></div>
+        <div id="avatarPortraitWrap"></div>
+        <div id="activePersonaCard"></div>
+        <span id="liveReadyStatus"></span>
+        <div id="auditStream"></div>
+        <div id="dynamicRoleCardContainer"></div>
+        <span id="currentRoleBadge"></span>
+        <span id="brandSubtitle"></span>
+        <span id="userDisplayName"></span>
+        <span id="userDisplayId"></span>
+        <span id="userAvatarIcon"></span>
+        <span id="authBtnLabel"></span>
+        <span id="userIdentityTag"></span>
+        <span id="voiceBtnText"></span>
+        <span id="escalateBtnText"></span>
+        <span id="sendBtnSpan"></span>
+        <div id="avatarPaneHeading"></div>
+        <div id="chatPaneHeading"></div>
+        <select id="escTargetSelectOld"></select>
+    </div>
 
     <script src="/static/app.js"></script>
 </body>
