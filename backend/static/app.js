@@ -1473,10 +1473,32 @@ function setupEventListeners() {
         };
     }
 
-    // Avatar Character Selector
+    // Avatar Character Selector (select dropdown in topbar)
+    const avatarPersonaSelect = document.getElementById("avatarPersonaSelect");
+    if (avatarPersonaSelect) {
+        avatarPersonaSelect.onchange = (e) => {
+            const chosen = e.target.value; // maya | vikram | priya | nova
+            currentAvatarCharacter = chosen;
+            const avatarChar = AVATAR_CHARACTERS[chosen] || AVATAR_CHARACTERS.maya;
+            // Update topbar displayed name
+            const personaNameEl = document.getElementById("personaName");
+            if (personaNameEl) personaNameEl.textContent = avatarChar.name.split(" — ")[0];
+            // Update avatar img if exists
+            const avatarImgEl = document.getElementById("avatarImg");
+            if (avatarImgEl) avatarImgEl.src = `/static/avatars/${chosen}.jpg`;
+            // Greet in new persona
+            const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
+            const greeting = `${avatarChar.icon} Hi! I'm ${avatarChar.name}. ${avatarChar.tone}. How can I help you?`;
+            appendMessage("assistant", greeting);
+            playAvatarSpeech(greeting);
+        };
+    }
+
+    // Legacy .avatar-opt-btn buttons (if any remain)
     document.querySelectorAll(".avatar-opt-btn").forEach(btn => {
         btn.onclick = () => {
-            switchAvatarCharacter(btn.dataset.avatar);
+            currentAvatarCharacter = btn.dataset.avatar;
+            if (avatarPersonaSelect) avatarPersonaSelect.value = btn.dataset.avatar;
         };
     });
 
@@ -1490,6 +1512,49 @@ function setupEventListeners() {
             if (targetContent) targetContent.classList.add("active");
         };
     });
+
+    // ── Sidebar Navigation Links ──────────────────────────────────────────────
+    // These send a relevant chat query when clicked and toggle the active state.
+    const sideNavLinks = [
+        { id: "navCalendar",  query: "Show me the school calendar and upcoming holidays" },
+        { id: "navGuides",    query: "Show me the role guide: what can I do as a " + currentRole.toLowerCase() },
+        { id: "navAnalytics", query: "Show school attendance analytics and overview" },
+    ];
+    sideNavLinks.forEach(({ id, query }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.onclick = (e) => {
+            e.preventDefault();
+            // Toggle active
+            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+            el.classList.add("active");
+            // Update chat topbar subtitle
+            const sub = document.getElementById("chatTopbarSubtitle");
+            if (sub) sub.textContent = el.querySelector("span")?.textContent || "";
+            // Send query
+            const liveQuery = id === "navGuides"
+                ? `Show me the role guide: what can I do as a ${currentRole.toLowerCase()}`
+                : query;
+            sendMessage(liveQuery);
+            // Re-activate Assistant nav after 200ms so it stays accessible
+            setTimeout(() => {
+                const assistantNav = document.getElementById("navAssistant");
+                if (assistantNav) assistantNav.classList.add("active");
+            }, 200);
+        };
+    });
+
+    // Assistant nav restores default state
+    const navAssistant = document.getElementById("navAssistant");
+    if (navAssistant) {
+        navAssistant.onclick = (e) => {
+            e.preventDefault();
+            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+            navAssistant.classList.add("active");
+            const sub = document.getElementById("chatTopbarSubtitle");
+            if (sub) sub.textContent = "New conversation";
+        };
+    }
 }
 
 function generateAndFillId(role) {
