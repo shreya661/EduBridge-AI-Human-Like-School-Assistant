@@ -228,18 +228,35 @@ class NLUService:
                     "message": analytics_res.get("message", "School analytics overview retrieved.")
                 }
 
-            elif intent in [Intent.OPEN_CANVA_STUDIO, "open_canva_studio", Intent.CREATE_CANVA_DESIGN, "create_canva_design"]:
-                from app.tools.canva_tool import canva_tool
-                canva_payload = canva_tool.execute_open_studio(
-                    identity=identity,
-                    design_type="presentation" if "presentation" in (nlu_result.entities.student_name or "").lower() or intent == Intent.CREATE_CANVA_DESIGN else None
-                )
-                tpl_title = canva_payload.get("template", {}).get("title", "Educational Design")
+            elif intent in [Intent.GENERAL_SCHOOL_QUERY, "general_school_query"]:
+                # Role-aware helpful response for general school information queries
+                role = identity.role.value if hasattr(identity.role, "value") else str(identity.role)
+                text_lower = str(nlu_result.entities).lower()
+
+                # Detect schedule/timetable intent within GENERAL_SCHOOL_QUERY
+                schedule_keywords = ["schedule", "timetable", "tomorrow", "class", "time"]
+                is_schedule = any(kw in str(nlu_result).lower() for kw in schedule_keywords)
+
+                if is_schedule:
+                    response_msg = (
+                        f"Hi {identity.name}! For your latest timetable and schedule, "
+                        "please check the school notice board or ask your class teacher directly. "
+                        "You can also use the \"Request Teacher Consultation\" button above to connect with your teacher now."
+                    )
+                else:
+                    role_tips = {
+                        "student": "I can help you with: attendance records, connecting with your teacher, exam schedules, and school queries.",
+                        "parent": "I can help you with: your child's attendance, teacher communication, and school updates.",
+                        "teacher": "I can help you with: class attendance marking, student records, and staff escalations.",
+                        "principal": "I can help you with: school-wide attendance analytics, flagged students, and administrative reports."
+                    }
+                    tip = role_tips.get(role.lower(), "Ask me anything about school attendance, schedules, or staff.")
+                    response_msg = f"Hello {identity.name}! {tip}"
+
                 return {
                     "success": True,
-                    "intent": intent.value if hasattr(intent, "value") else intent,
-                    "data": canva_payload,
-                    "message": f"I've opened the Canva Design Studio for you with the '{tpl_title}' template ready!"
+                    "intent": "general_school_query",
+                    "message": response_msg
                 }
 
             elif intent in [Intent.GREETING, "greeting"]:

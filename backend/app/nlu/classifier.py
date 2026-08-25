@@ -179,6 +179,39 @@ class NLUClassifier:
                 r"നമസ്കാരം",
                 r"آداب",
             ],
+            Intent.GENERAL_SCHOOL_QUERY: [
+                r"schedule",
+                r"timetable",
+                r"time.?table",
+                r"tomorrow.*class",
+                r"class.*tomorrow",
+                r"what.*class",
+                r"holiday",
+                r"exam.*date",
+                r"exam.*schedule",
+                r"fee",
+                r"homework",
+                r"assignment",
+                r"syllabus",
+                r"my.*name",
+                r"who am i",
+                r"my.*id",
+                r"my.*class",
+                r"my.*section",
+                r"my.*grade",
+                r"teacher.*name",
+                r"school.*name",
+                r"school.*timing",
+                r"what.*time",
+                r"help",
+                r"what can you do",
+                r"what.*support",
+                r"સમય.?પત્રક",
+                r"ટાઈમ.?ટેબલ",
+                r"समय.?सारणी",
+                r"வகுப்பு.*அட்டவணை",
+                r"时间表",
+            ],
             Intent.UNSUPPORTED_REQUEST: [
                 r"\bdelete\b",
                 r"\bremove\b",
@@ -186,6 +219,8 @@ class NLUClassifier:
                 r"hack\b",
                 r"system prompt",
                 r"api key",
+                r"ignore.*instruction",
+                r"jailbreak",
             ]
         }
 
@@ -205,11 +240,19 @@ class NLUClassifier:
         )
     
     def _detect_intent(self, text: str) -> Intent:
+        # Try all explicit patterns first (GENERAL_SCHOOL_QUERY checked last before fallback)
         for intent, patterns in self.intent_patterns.items():
+            if intent == Intent.GENERAL_SCHOOL_QUERY:
+                continue  # check this after all specific intents
             for pattern in patterns:
                 if re.search(pattern, text):
                     return intent
-        return Intent.UNSUPPORTED_REQUEST
+        # Try general school query patterns
+        for pattern in self.intent_patterns.get(Intent.GENERAL_SCHOOL_QUERY, []):
+            if re.search(pattern, text):
+                return Intent.GENERAL_SCHOOL_QUERY
+        # Default: treat as general school query rather than hard UNSUPPORTED
+        return Intent.GENERAL_SCHOOL_QUERY
     
     def _extract_entities(self, text: str) -> NLUEntities:
         entities = NLUEntities()

@@ -57,6 +57,7 @@ ROLE_PERMISSIONS: Dict[Role, frozenset] = {
             Intent.ESCALATE_TO_TEACHER,
             "view_own_attendance",
             "view_own_profile",
+            "general_school_query",
             "escalate_to_teacher",
         }
     ),
