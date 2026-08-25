@@ -526,6 +526,12 @@ function updateUserProfileUI(userId, role, name) {
     const topbarSubtitles = { STUDENT: "STUDENT ASSISTANT", PARENT: "PARENT SUPPORT ASSISTANT", TEACHER: "TEACHER DESK", PRINCIPAL: "PRINCIPAL COMMAND" };
     if (topbarTitle) topbarTitle.textContent = topbarSubtitles[role] || "SCHOOL ASSISTANT";
 
+    // Settings Modal elements
+    const settingsUid = document.getElementById("settingsUserId");
+    if (settingsUid) settingsUid.textContent = userId;
+    const settingsRole = document.getElementById("settingsUserRole");
+    if (settingsRole) settingsRole.textContent = role;
+
     const langConfig = MULTI_LANG_CONFIG[currentLanguage] || MULTI_LANG_CONFIG.en;
     const ui = langConfig.ui || MULTI_LANG_CONFIG.en.ui;
     if (userIdentityTag) userIdentityTag.textContent = `${ui.loggedInAs}: ${name} (${userId})`;
@@ -1513,38 +1519,7 @@ function setupEventListeners() {
         };
     });
 
-    // ── Sidebar Navigation Links ──────────────────────────────────────────────
-    // These send a relevant chat query when clicked and toggle the active state.
-    const sideNavLinks = [
-        { id: "navCalendar",  query: "Show me the school calendar and upcoming holidays" },
-        { id: "navGuides",    query: "Show me the role guide: what can I do as a " + currentRole.toLowerCase() },
-        { id: "navAnalytics", query: "Show school attendance analytics and overview" },
-    ];
-    sideNavLinks.forEach(({ id, query }) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.onclick = (e) => {
-            e.preventDefault();
-            // Toggle active
-            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-            el.classList.add("active");
-            // Update chat topbar subtitle
-            const sub = document.getElementById("chatTopbarSubtitle");
-            if (sub) sub.textContent = el.querySelector("span")?.textContent || "";
-            // Send query
-            const liveQuery = id === "navGuides"
-                ? `Show me the role guide: what can I do as a ${currentRole.toLowerCase()}`
-                : query;
-            sendMessage(liveQuery);
-            // Re-activate Assistant nav after 200ms so it stays accessible
-            setTimeout(() => {
-                const assistantNav = document.getElementById("navAssistant");
-                if (assistantNav) assistantNav.classList.add("active");
-            }, 200);
-        };
-    });
-
-    // Assistant nav restores default state
+    // ── Sidebar Navigation Links (Direct Interactive Modals) ─────────────────
     const navAssistant = document.getElementById("navAssistant");
     if (navAssistant) {
         navAssistant.onclick = (e) => {
@@ -1553,6 +1528,129 @@ function setupEventListeners() {
             navAssistant.classList.add("active");
             const sub = document.getElementById("chatTopbarSubtitle");
             if (sub) sub.textContent = "New conversation";
+        };
+    }
+
+    const navCalendar = document.getElementById("navCalendar");
+    if (navCalendar) {
+        navCalendar.onclick = (e) => {
+            e.preventDefault();
+            openCalendarModal();
+        };
+    }
+
+    const navGuides = document.getElementById("navGuides");
+    if (navGuides) {
+        navGuides.onclick = (e) => {
+            e.preventDefault();
+            openRoleGuidesModal();
+        };
+    }
+
+    const navAnalytics = document.getElementById("navAnalytics");
+    if (navAnalytics) {
+        navAnalytics.onclick = (e) => {
+            e.preventDefault();
+            openAnalyticsModal();
+        };
+    }
+
+    // ── Settings Modals Triggers ──────────────────────────────────────────────
+    const sidebarSettingsBtn = document.getElementById("sidebarSettingsBtn");
+    if (sidebarSettingsBtn) sidebarSettingsBtn.onclick = () => openSettingsModal();
+
+    const topbarSettingsBtn = document.getElementById("topbarSettingsBtn");
+    if (topbarSettingsBtn) topbarSettingsBtn.onclick = () => openSettingsModal();
+
+    // Settings Modal Close Buttons
+    const closeSettingsModalBtn = document.getElementById("closeSettingsModalBtn");
+    if (closeSettingsModalBtn) closeSettingsModalBtn.onclick = () => closeSettingsModal();
+    const btnCloseSettingsModal = document.getElementById("btnCloseSettingsModal");
+    if (btnCloseSettingsModal) btnCloseSettingsModal.onclick = () => closeSettingsModal();
+
+    // Calendar Modal Close & Action Buttons
+    const closeCalendarModalBtn = document.getElementById("closeCalendarModalBtn");
+    if (closeCalendarModalBtn) closeCalendarModalBtn.onclick = () => closeCalendarModal();
+    const btnCloseCalendarModal = document.getElementById("btnCloseCalendarModal");
+    if (btnCloseCalendarModal) btnCloseCalendarModal.onclick = () => closeCalendarModal();
+    const btnAskCalendarAssistant = document.getElementById("btnAskCalendarAssistant");
+    if (btnAskCalendarAssistant) {
+        btnAskCalendarAssistant.onclick = () => {
+            closeCalendarModal();
+            sendMessage("What are the upcoming exams and school holidays?");
+        };
+    }
+
+    // Analytics Modal Close & Action Buttons
+    const closeAnalyticsModalBtn = document.getElementById("closeAnalyticsModalBtn");
+    if (closeAnalyticsModalBtn) closeAnalyticsModalBtn.onclick = () => closeAnalyticsModal();
+    const btnCloseAnalyticsModal = document.getElementById("btnCloseAnalyticsModal");
+    if (btnCloseAnalyticsModal) btnCloseAnalyticsModal.onclick = () => closeAnalyticsModal();
+    const btnAskAnalyticsAssistant = document.getElementById("btnAskAnalyticsAssistant");
+    if (btnAskAnalyticsAssistant) {
+        btnAskAnalyticsAssistant.onclick = () => {
+            closeAnalyticsModal();
+            sendMessage("What is the overall attendance and which students need support?");
+        };
+    }
+
+    // Role Guides Modal Close Buttons
+    const closeRoleGuidesModalBtn = document.getElementById("closeRoleGuidesModalBtn");
+    if (closeRoleGuidesModalBtn) closeRoleGuidesModalBtn.onclick = () => closeRoleGuidesModal();
+    const btnCloseRoleGuidesModal = document.getElementById("btnCloseRoleGuidesModal");
+    if (btnCloseRoleGuidesModal) btnCloseRoleGuidesModal.onclick = () => closeRoleGuidesModal();
+
+    // Calendar Filter Pills
+    document.querySelectorAll("#calFilterBar .cal-filter-pill").forEach(pill => {
+        pill.onclick = () => {
+            document.querySelectorAll("#calFilterBar .cal-filter-pill").forEach(p => p.classList.remove("active"));
+            pill.classList.add("active");
+            const filter = pill.dataset.filter;
+            if (filter === "timetable") {
+                document.getElementById("calendarEventsList")?.classList.add("hidden");
+                document.getElementById("timetableSection")?.classList.remove("hidden");
+                loadTimetable("10-A");
+            } else {
+                document.getElementById("calendarEventsList")?.classList.remove("hidden");
+                document.getElementById("timetableSection")?.classList.add("hidden");
+                loadCalendarEvents(filter);
+            }
+        };
+    });
+
+    // Timetable class selector dropdown
+    const timetableClassSelect = document.getElementById("timetableClassSelect");
+    if (timetableClassSelect) {
+        timetableClassSelect.onchange = (e) => {
+            loadTimetable(e.target.value);
+        };
+    }
+
+    // Role Guides Tabs
+    document.querySelectorAll("#roleGuideTabs .role-guide-tab-btn").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll("#roleGuideTabs .role-guide-tab-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            renderRoleGuideForRole(btn.dataset.role);
+        };
+    });
+
+    // Theme selector cards
+    document.querySelectorAll("#themeGrid .theme-card").forEach(card => {
+        card.onclick = () => {
+            applyTheme(card.dataset.theme);
+        };
+    });
+
+    // Settings speech slider & auto-speak
+    const settingSpeechSlider = document.getElementById("settingSpeechSlider");
+    if (settingSpeechSlider) {
+        settingSpeechSlider.oninput = (e) => {
+            voiceSpeechRate = parseFloat(e.target.value) || 1.0;
+            const lbl = document.getElementById("speechRateLabel");
+            if (lbl) lbl.textContent = `${voiceSpeechRate.toFixed(2)}×`;
+            const voiceSpeedSelect = document.getElementById("voiceSpeedSelect");
+            if (voiceSpeedSelect) voiceSpeedSelect.value = "1.0";
         };
     }
 }
@@ -1649,8 +1747,289 @@ function escapeHTML(str) {
 }
 
 
+// ── THEME ENGINE ──────────────────────────────────────────────────────────
+function applyTheme(themeName) {
+    const validThemes = ["emerald", "midnight", "pearl", "sunset", "forest"];
+    const chosen = validThemes.includes(themeName) ? themeName : "emerald";
+
+    document.documentElement.setAttribute("data-theme", chosen);
+    localStorage.setItem("xyz_theme", chosen);
+
+    // Update active state on settings cards
+    document.querySelectorAll("#themeGrid .theme-card").forEach(card => {
+        if (card.dataset.theme === chosen) {
+            card.classList.add("active");
+            const nameEl = card.querySelector(".theme-card-name");
+            if (nameEl && !nameEl.innerHTML.includes("✓")) {
+                nameEl.innerHTML = `${nameEl.textContent.trim()} <span style="font-size:10px">✓</span>`;
+            }
+        } else {
+            card.classList.remove("active");
+            const nameEl = card.querySelector(".theme-card-name");
+            if (nameEl) nameEl.textContent = nameEl.textContent.replace("✓", "").trim();
+        }
+    });
+}
+
+function initThemeEngine() {
+    const savedTheme = localStorage.getItem("xyz_theme") || "emerald";
+    applyTheme(savedTheme);
+}
+
+// ── CALENDAR MODAL CONTROLLER ─────────────────────────────────────────────
+async function openCalendarModal() {
+    const modal = document.getElementById("calendarModal");
+    if (modal) modal.classList.add("active");
+    loadCalendarEvents("all");
+}
+
+function closeCalendarModal() {
+    const modal = document.getElementById("calendarModal");
+    if (modal) modal.classList.remove("active");
+}
+
+async function loadCalendarEvents(category = "all") {
+    const container = document.getElementById("calendarEventsList");
+    if (!container) return;
+
+    container.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-subtle)">Loading calendar events...</div>`;
+
+    try {
+        const url = category && category !== "all"
+            ? `/api/v1/calendar/events?category=${encodeURIComponent(category)}`
+            : `/api/v1/calendar/events`;
+
+        const res = await fetch(url, { credentials: "include" });
+        const events = await res.json();
+
+        if (!Array.isArray(events) || events.length === 0) {
+            container.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-subtle)">No events found for this category.</div>`;
+            return;
+        }
+
+        container.innerHTML = "";
+        events.forEach(evt => {
+            const card = document.createElement("div");
+            card.className = "event-item-card";
+
+            const d = new Date(evt.date);
+            const monthName = d.toLocaleString("default", { month: "short" }).toUpperCase();
+            const dayNum = d.getDate();
+
+            card.innerHTML = `
+                <div class="event-date-badge" style="background:${evt.badge_color}18;color:${evt.badge_color}">
+                    <div>${monthName}</div>
+                    <div style="font-size:16px">${dayNum}</div>
+                </div>
+                <div class="event-details">
+                    <div class="event-header-row">
+                        <div class="event-title">${escapeHTML(evt.title)}</div>
+                        <span class="event-tag" style="background:${evt.badge_color}20;color:${evt.badge_color}">${escapeHTML(evt.category)}</span>
+                    </div>
+                    <div class="event-desc">${escapeHTML(evt.description)}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        container.innerHTML = `<div style="text-align:center;padding:20px;color:#ef4444">Failed to load calendar events.</div>`;
+    }
+}
+
+async function loadTimetable(classId = "10-A") {
+    const tbody = document.getElementById("timetableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--text-subtle)">Loading timetable...</td></tr>`;
+
+    try {
+        const res = await fetch(`/api/v1/calendar/timetable/${encodeURIComponent(classId)}`, { credentials: "include" });
+        const data = await res.json();
+
+        if (!data || !data.periods) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:14px">No timetable schedule found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = "";
+        data.periods.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>Period ${p.period_num}</strong></td>
+                <td style="color:var(--text-secondary)">${escapeHTML(p.time_slot)}</td>
+                <td><strong>${escapeHTML(p.subject)}</strong></td>
+                <td>${escapeHTML(p.teacher_name)}</td>
+                <td><span style="background:var(--accent-chip);color:var(--accent-chip-text);padding:2px 8px;border-radius:4px;font-size:11px">${escapeHTML(p.room)}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:14px;color:#ef4444">Error loading timetable.</td></tr>`;
+    }
+}
+
+// ── ANALYTICS MODAL CONTROLLER ────────────────────────────────────────────
+async function openAnalyticsModal() {
+    const modal = document.getElementById("analyticsModal");
+    if (modal) modal.classList.add("active");
+    loadAnalyticsData();
+}
+
+function closeAnalyticsModal() {
+    const modal = document.getElementById("analyticsModal");
+    if (modal) modal.classList.remove("active");
+}
+
+async function loadAnalyticsData() {
+    try {
+        const res = await fetch("/api/v1/analytics/overview", { credentials: "include" });
+        const data = await res.json();
+
+        if (!data || !data.kpis) return;
+
+        // Populate KPIs
+        const kpis = data.kpis;
+        const kpiPct = document.getElementById("kpiOverallPct");
+        if (kpiPct) kpiPct.textContent = `${kpis.overall_attendance_pct}%`;
+        const kpiTot = document.getElementById("kpiTotalStudents");
+        if (kpiTot) kpiTot.textContent = kpis.total_students;
+        const kpiPres = document.getElementById("kpiPresentToday");
+        if (kpiPres) kpiPres.textContent = kpis.present_today;
+        const kpiAbs = document.getElementById("kpiAbsentToday");
+        if (kpiAbs) kpiAbs.textContent = kpis.absent_today;
+
+        // Populate Flagged Table
+        if (data.flagged_students) {
+            const tbody = document.getElementById("flaggedStudentsBody");
+            if (tbody) {
+                tbody.innerHTML = "";
+                data.flagged_students.forEach(s => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><code>${escapeHTML(s.student_id)}</code></td>
+                        <td><strong>${escapeHTML(s.name)}</strong></td>
+                        <td>${escapeHTML(s.class || "10-A")}</td>
+                        <td><span class="flag-badge">${s.attendance_pct}%</span></td>
+                        <td style="color:var(--text-secondary)">${escapeHTML(s.reason)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+    } catch (err) {
+        console.error("Failed to load analytics overview:", err);
+    }
+}
+
+// ── ROLE GUIDANCE MODAL CONTROLLER ────────────────────────────────────────
+let cachedRoleGuides = null;
+
+async function openRoleGuidesModal() {
+    const modal = document.getElementById("roleGuidesModal");
+    if (modal) modal.classList.add("active");
+
+    // Highlight active role tab by default
+    document.querySelectorAll("#roleGuideTabs .role-guide-tab-btn").forEach(btn => {
+        if (btn.dataset.role === currentRole) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    renderRoleGuideForRole(currentRole);
+}
+
+function closeRoleGuidesModal() {
+    const modal = document.getElementById("roleGuidesModal");
+    if (modal) modal.classList.remove("active");
+}
+
+async function renderRoleGuideForRole(roleName = "STUDENT") {
+    try {
+        if (!cachedRoleGuides) {
+            const res = await fetch("/api/v1/role-guides", { credentials: "include" });
+            cachedRoleGuides = await res.json();
+        }
+
+        const guide = cachedRoleGuides[roleName] || cachedRoleGuides["STUDENT"];
+        if (!guide) return;
+
+        const iconEl = document.getElementById("roleGuideIcon");
+        if (iconEl) iconEl.textContent = guide.icon;
+
+        const titleEl = document.getElementById("roleGuideTitle");
+        if (titleEl) titleEl.textContent = `${guide.display_title} (${guide.primary_persona})`;
+
+        const descEl = document.getElementById("roleGuideDesc");
+        if (descEl) descEl.textContent = `${guide.description} Boundary: ${guide.zero_trust_boundary}`;
+
+        const allowedList = document.getElementById("rolePermsAllowedList");
+        if (allowedList) {
+            allowedList.innerHTML = "";
+            guide.allowed_operations.forEach(op => {
+                const li = document.createElement("li");
+                li.innerHTML = `<span>✓</span><span>${escapeHTML(op)}</span>`;
+                allowedList.appendChild(li);
+            });
+        }
+
+        const blockedList = document.getElementById("rolePermsBlockedList");
+        if (blockedList) {
+            blockedList.innerHTML = "";
+            guide.prohibited_operations.forEach(op => {
+                const li = document.createElement("li");
+                li.innerHTML = `<span>✕</span><span>${escapeHTML(op)}</span>`;
+                blockedList.appendChild(li);
+            });
+        }
+
+        // 1-Click sample prompts
+        const promptsWrap = document.getElementById("roleSamplePromptsWrap");
+        if (promptsWrap) {
+            promptsWrap.innerHTML = "";
+            guide.sample_queries.forEach(query => {
+                const pill = document.createElement("button");
+                pill.className = "sample-prompt-pill";
+                pill.innerHTML = `<span>💬</span><span>"${escapeHTML(query)}"</span>`;
+                pill.onclick = () => {
+                    closeRoleGuidesModal();
+                    if (chatInput) chatInput.value = query;
+                    sendMessage(query);
+                };
+                promptsWrap.appendChild(pill);
+            });
+        }
+
+    } catch (err) {
+        console.error("Failed to render role guide:", err);
+    }
+}
+
+// ── SETTINGS MODAL CONTROLLER ─────────────────────────────────────────────
+function openSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    if (modal) {
+        modal.classList.add("active");
+        const uid = document.getElementById("settingsUserId");
+        if (uid) uid.textContent = currentUser || "STU10A88F2";
+        const urole = document.getElementById("settingsUserRole");
+        if (urole) urole.textContent = currentRole || "STUDENT";
+    }
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.classList.remove("active");
+}
+
 // Initialize application on DOM ready
 window.addEventListener('DOMContentLoaded', () => {
+    initThemeEngine();
     setupEventListeners();
     loginUser('STU10A88F2', 'Password@123', 'STUDENT');
 });
+

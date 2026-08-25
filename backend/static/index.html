@@ -156,6 +156,14 @@
                 </div>
             </div>
 
+            <!-- Sidebar Footer: Settings & System Status -->
+            <div class="sidebar-footer-settings">
+                <button class="sidebar-settings-btn" id="sidebarSettingsBtn" title="Preferences & Appearance">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Settings & Themes</span>
+                </button>
+            </div>
+
         </aside>
 
         <!-- ============================================================
@@ -200,6 +208,11 @@
                         <option value="1.0" selected>1.0×</option>
                         <option value="1.2">1.2×</option>
                     </select>
+
+                    <!-- Topbar Settings gear button -->
+                    <button class="topbar-icon-btn" id="topbarSettingsBtn" title="Settings & Appearance">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
                 </div>
             </header>
 
@@ -429,19 +442,377 @@
         </div>
     </div>
 
-    <!-- Inactivity Lock Overlay -->
-    <div class="lock-overlay hidden" id="lockOverlay">
-        <div class="lock-card">
-            <div class="lock-icon">🔒</div>
-            <h3>Session Locked</h3>
-            <p>Locked due to inactivity. Please re-authenticate to continue.</p>
-            <div class="lock-user-pill">
-                <span id="lockUserName">Rahul Patel</span>
-                <small id="lockUserId">STU10A88F2</small>
+    <!-- ============================================================
+         NEW ADVANCED MODALS
+    ============================================================ -->
+
+    <!-- 1. School Calendar & Timetable Modal -->
+    <div class="modal-backdrop" id="calendarModal">
+        <div class="modal-window wide">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">📅</span>
+                    <div>
+                        <div class="modal-title">School Calendar & Class Schedules</div>
+                        <div class="modal-subtitle">Academic term dates, upcoming examinations, holidays, and live class timetables</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeCalendarModalBtn">✕</button>
             </div>
-            <div class="lock-actions">
-                <button class="modal-btn-primary" id="unlockResumeBtn">Resume Session</button>
-                <button class="modal-btn-ghost" id="unlockSwitchBtn">Switch Account</button>
+            <div class="modal-body">
+                <!-- Filter Pills -->
+                <div class="cal-filter-bar" id="calFilterBar">
+                    <button class="cal-filter-pill active" data-filter="all">All Events</button>
+                    <button class="cal-filter-pill" data-filter="exam">📝 Exams</button>
+                    <button class="cal-filter-pill" data-filter="holiday">🌴 Holidays</button>
+                    <button class="cal-filter-pill" data-filter="meeting">👥 Conferences</button>
+                    <button class="cal-filter-pill" data-filter="event">🏆 Activities</button>
+                    <button class="cal-filter-pill" data-filter="timetable">⏰ Class Timetable</button>
+                </div>
+
+                <!-- Event Timeline List -->
+                <div class="events-timeline-list" id="calendarEventsList">
+                    <!-- Loaded dynamically via /api/v1/calendar/events -->
+                </div>
+
+                <!-- Timetable Container (Hidden by default until selected) -->
+                <div id="timetableSection" class="hidden">
+                    <div class="timetable-header-select">
+                        <strong>Select Class Timetable:</strong>
+                        <select id="timetableClassSelect" class="modal-select" style="width: auto;">
+                            <option value="10-A">Class 10-A (Secondary)</option>
+                            <option value="10-B">Class 10-B (Secondary)</option>
+                            <option value="9-A">Class 9-A (Foundation)</option>
+                        </select>
+                    </div>
+                    <table class="timetable-table" id="timetableTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Time Slot</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-ghost" id="btnAskCalendarAssistant">💬 Ask Assistant about Dates</button>
+                <button class="modal-btn-primary" id="btnCloseCalendarModal">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Analytics Dashboard Modal -->
+    <div class="modal-backdrop" id="analyticsModal">
+        <div class="modal-window wide">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">📊</span>
+                    <div>
+                        <div class="modal-title">Institutional Attendance & Performance Analytics</div>
+                        <div class="modal-subtitle">Real-time attendance rates, class breakdown, and low-attendance flagged alerts</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeAnalyticsModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- KPI Cards -->
+                <div class="kpi-metrics-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiOverallPct">92.4%</div>
+                        <div class="kpi-label">Average Attendance</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiTotalStudents">450</div>
+                        <div class="kpi-label">Total Enrolled</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiPresentToday">416</div>
+                        <div class="kpi-label">Present Today</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" style="color:#ef4444" id="kpiAbsentToday">34</div>
+                        <div class="kpi-label">Absent Today</div>
+                    </div>
+                </div>
+
+                <!-- Charts Split: Pie/Donut Chart + Class Comparison -->
+                <div class="charts-row-split">
+                    <!-- Interactive SVG Pie / Donut Chart -->
+                    <div class="pie-chart-box">
+                        <strong style="font-size:13px;color:var(--text-primary);margin-bottom:8px">Attendance Distribution</strong>
+                        <div class="pie-svg-wrap">
+                            <svg width="140" height="140" viewBox="0 0 42 42" class="donut">
+                                <circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="rgba(0,0,0,0.06)" stroke-width="5"></circle>
+                                <!-- Slices rendered by JS -->
+                                <circle id="pieSlicePresent" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#10b981" stroke-width="5" stroke-dasharray="89.8 10.2" stroke-dashoffset="25"></circle>
+                                <circle id="pieSliceLate" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f59e0b" stroke-width="5" stroke-dasharray="2.7 97.3" stroke-dashoffset="-64.8"></circle>
+                                <circle id="pieSliceExcused" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#6366f1" stroke-width="5" stroke-dasharray="1.8 98.2" stroke-dashoffset="-67.5"></circle>
+                                <circle id="pieSliceAbsent" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#ef4444" stroke-width="5" stroke-dasharray="5.7 94.3" stroke-dashoffset="-69.3"></circle>
+                            </svg>
+                            <div class="pie-center-text">
+                                92.4%
+                                <div class="pie-center-sub">Present Rate</div>
+                            </div>
+                        </div>
+                        <div class="pie-legend">
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#10b981"></div>Present (89.8%)</div>
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#f59e0b"></div>Late (2.7%)</div>
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#6366f1"></div>Excused (1.8%)</div>
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#ef4444"></div>Absent (5.7%)</div>
+                        </div>
+                    </div>
+
+                    <!-- Class Comparison Bars -->
+                    <div class="class-progress-box">
+                        <strong style="font-size:13px;color:var(--text-primary)">Class-by-Class Attendance</strong>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 10-A</span><span style="color:#10b981">94.2%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:94.2%"></div></div>
+                        </div>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 9-A</span><span style="color:#10b981">93.3%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:93.3%"></div></div>
+                        </div>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 9-B</span><span style="color:#f59e0b">91.5%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:91.5%;background:#f59e0b"></div></div>
+                        </div>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 10-B</span><span style="color:#f59e0b">90.0%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:90.0%;background:#f59e0b"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flagged Low Attendance Students -->
+                <div>
+                    <strong style="font-size:13px;color:var(--text-primary);display:block;margin-bottom:8px">⚠️ Low Attendance Alerts (&lt;75%)</strong>
+                    <div class="flagged-table-card">
+                        <table class="flagged-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Attendance</th>
+                                    <th>Reason / Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="flaggedStudentsBody">
+                                <tr>
+                                    <td><code>S002</code></td>
+                                    <td><strong>Priya Sharma</strong></td>
+                                    <td>10-A</td>
+                                    <td><span class="flag-badge">74.5%</span></td>
+                                    <td style="color:var(--text-secondary)">Consecutive 3-day unexcused absence</td>
+                                </tr>
+                                <tr>
+                                    <td><code>S007</code></td>
+                                    <td><strong>Vikas Rao</strong></td>
+                                    <td>9-B</td>
+                                    <td><span class="flag-badge">68.0%</span></td>
+                                    <td style="color:var(--text-secondary)">Low monthly aggregate — notification dispatched</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-ghost" id="btnAskAnalyticsAssistant">💬 Discuss Metrics with Assistant</button>
+                <button class="modal-btn-primary" id="btnCloseAnalyticsModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Role Guidance & RBAC Inspector Modal -->
+    <div class="modal-backdrop" id="roleGuidesModal">
+        <div class="modal-window wide">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">🛡️</span>
+                    <div>
+                        <div class="modal-title">Zero-Trust Role Guidance & Access Matrix</div>
+                        <div class="modal-subtitle">Explore what each role is permitted to perform, security boundaries, and sample queries</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeRoleGuidesModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Role Switcher Tabs -->
+                <div class="role-guide-tabs" id="roleGuideTabs">
+                    <button class="role-guide-tab-btn active" data-role="STUDENT"><span>🎓</span><span>Student</span></button>
+                    <button class="role-guide-tab-btn" data-role="PARENT"><span>👨‍👩‍👧</span><span>Parent</span></button>
+                    <button class="role-guide-tab-btn" data-role="TEACHER"><span>👩‍🏫</span><span>Teacher</span></button>
+                    <button class="role-guide-tab-btn" data-role="PRINCIPAL"><span>🏛️</span><span>Principal</span></button>
+                </div>
+
+                <!-- Active Role Banner -->
+                <div class="role-card-banner" id="roleGuideBanner">
+                    <div class="role-banner-icon" id="roleGuideIcon">🎓</div>
+                    <div>
+                        <div class="role-banner-title" id="roleGuideTitle">Student Role</div>
+                        <div class="role-banner-desc" id="roleGuideDesc">Individual student learner profile with self-attendance tracking, timetable lookups, and direct teacher escalation.</div>
+                    </div>
+                </div>
+
+                <!-- Allowed vs Prohibited Matrix -->
+                <div class="role-perms-split">
+                    <div class="role-perm-card allowed">
+                        <div class="role-perm-head"><span>✓</span><span>Permitted Operations</span></div>
+                        <ul class="role-perm-list" id="rolePermsAllowedList">
+                            <li><span>•</span><span>View personal attendance record & overall %</span></li>
+                            <li><span>•</span><span>Check daily class timetable & upcoming exams</span></li>
+                            <li><span>•</span><span>Ask general school inquiries (holidays, timings, fees)</span></li>
+                            <li><span>•</span><span>Request 1-on-1 teacher consultation & callback tickets</span></li>
+                        </ul>
+                    </div>
+                    <div class="role-perm-card blocked">
+                        <div class="role-perm-head"><span>✕</span><span>Blocked Operations (Zero-Trust RBAC)</span></div>
+                        <ul class="role-perm-list" id="rolePermsBlockedList">
+                            <li><span>•</span><span>Cannot view other students' personal records or grades</span></li>
+                            <li><span>•</span><span>Cannot mark or modify attendance records</span></li>
+                            <li><span>•</span><span>Cannot access administrative or school-wide analytics</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 1-Click Sample Test Prompts -->
+                <div>
+                    <strong style="font-size:13px;color:var(--text-primary);display:block;margin-bottom:8px">⚡ Try Sample Prompts for This Role (1-Click Test):</strong>
+                    <div class="prompt-chips-wrap" id="roleSamplePromptsWrap">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-primary" id="btnCloseRoleGuidesModal">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Settings & Theme Customizer Modal -->
+    <div class="modal-backdrop" id="settingsModal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">⚙️</span>
+                    <div>
+                        <div class="modal-title">System Settings & Appearance</div>
+                        <div class="modal-subtitle">Customize theme, audio voice preferences, and real-time alert notifications</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeSettingsModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Color Themes Grid -->
+                <div class="settings-group">
+                    <div class="settings-group-title">🎨 Color Theme</div>
+                    <div class="theme-grid" id="themeGrid">
+                        <div class="theme-card active" data-theme="emerald">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#1a2332"></div>
+                                <div class="theme-swatch" style="background:#3d6b5e"></div>
+                                <div class="theme-swatch" style="background:#f5f4f0"></div>
+                            </div>
+                            <div class="theme-card-name">Emerald Slate <span style="font-size:10px">✓</span></div>
+                            <div class="theme-card-sub">Default clean dark/light balance</div>
+                        </div>
+                        <div class="theme-card" data-theme="midnight">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#0b0f19"></div>
+                                <div class="theme-swatch" style="background:#6366f1"></div>
+                                <div class="theme-swatch" style="background:#0f172a"></div>
+                            </div>
+                            <div class="theme-card-name">Midnight Indigo</div>
+                            <div class="theme-card-sub">Deep dark cyber space mode</div>
+                        </div>
+                        <div class="theme-card" data-theme="pearl">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#f8fafc"></div>
+                                <div class="theme-swatch" style="background:#0284c7"></div>
+                                <div class="theme-swatch" style="background:#ffffff"></div>
+                            </div>
+                            <div class="theme-card-name">Pearl Minimal</div>
+                            <div class="theme-card-sub">Crisp, modern light mode</div>
+                        </div>
+                        <div class="theme-card" data-theme="sunset">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#1c1512"></div>
+                                <div class="theme-swatch" style="background:#f59e0b"></div>
+                                <div class="theme-swatch" style="background:#261f1c"></div>
+                            </div>
+                            <div class="theme-card-name">Sunset Amber</div>
+                            <div class="theme-card-sub">Warm espresso & golden amber</div>
+                        </div>
+                        <div class="theme-card" data-theme="forest">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#0f231c"></div>
+                                <div class="theme-swatch" style="background:#10b981"></div>
+                                <div class="theme-swatch" style="background:#142e25"></div>
+                            </div>
+                            <div class="theme-card-name">Forest Sage</div>
+                            <div class="theme-card-sub">Natural deep green & earthy tones</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice & Persona Configuration -->
+                <div class="settings-group">
+                    <div class="settings-group-title">🔊 Audio & Voice Persona</div>
+                    <div class="settings-toggle-row">
+                        <div>
+                            <div class="settings-toggle-label">Auto-Speak AI Responses</div>
+                            <div class="settings-toggle-sub">Read out text replies automatically using Web Speech TTS</div>
+                        </div>
+                        <label class="switch-control">
+                            <input type="checkbox" id="settingAutoSpeak">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-toggle-row">
+                        <div>
+                            <div class="settings-toggle-label">Voice Speech Rate</div>
+                            <div class="settings-toggle-sub">Speed of spoken responses (<span id="speechRateLabel">1.0×</span>)</div>
+                        </div>
+                        <input type="range" id="settingSpeechSlider" min="0.75" max="1.5" step="0.05" value="1.0" style="width:120px">
+                    </div>
+                </div>
+
+                <!-- Notifications & Alert Simulations -->
+                <div class="settings-group">
+                    <div class="settings-group-title">🔔 Alerts & Simulations</div>
+                    <div class="settings-toggle-row">
+                        <div>
+                            <div class="settings-toggle-label">WhatsApp / SMS Absence Alert Simulation</div>
+                            <div class="settings-toggle-sub">Trigger real-time popup toast to parents when an Absent mark is recorded</div>
+                        </div>
+                        <label class="switch-control">
+                            <input type="checkbox" id="settingSmsAlerts" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Active Identity & RBAC Info -->
+                <div class="settings-group" style="background:rgba(0,0,0,0.02)">
+                    <div class="settings-group-title">🛡️ Active Session & Clearance</div>
+                    <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;color:var(--text-secondary)">
+                        <div>User ID: <strong id="settingsUserId" style="color:var(--text-primary);font-family:monospace">STU10A88F2</strong></div>
+                        <div>Role: <strong id="settingsUserRole" style="color:var(--accent)">STUDENT</strong></div>
+                        <div>Zero-Trust RBAC Policy: <code>Strict Least Privilege v2.4</code></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-primary" id="btnCloseSettingsModal">Save & Close</button>
             </div>
         </div>
     </div>

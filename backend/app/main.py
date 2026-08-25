@@ -90,6 +90,9 @@ from app.mock_api.escalation_router import router as escalation_router
 from app.voice.router import router as voice_router
 from app.avatar.router import router as avatar_router
 from app.directory.router import router as directory_router
+from app.calendar.router import router as calendar_router
+from app.analytics.router import router as analytics_router
+from app.domain.role_guides_router import router as role_guides_router
 
 # Include all core service routers
 app.include_router(auth_router)
@@ -102,6 +105,9 @@ app.include_router(escalation_router)
 app.include_router(voice_router)
 app.include_router(avatar_router)
 app.include_router(directory_router)
+app.include_router(calendar_router)
+app.include_router(analytics_router)
+app.include_router(role_guides_router)
 
 # Mount static directory for interactive frontend
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
