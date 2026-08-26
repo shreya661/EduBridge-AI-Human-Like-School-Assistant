@@ -93,6 +93,51 @@ CALENDAR_EVENTS: List[CalendarEvent] = [
         description="Principal and administrative staff review low-attendance alerts and intervention plans.",
         badge_color="#f59e0b",
         applicable_roles=["PRINCIPAL", "TEACHER"]
+    ),
+    CalendarEvent(
+        id="EVT-007",
+        title="Diwali Break & Festival Holidays",
+        date="2026-11-02",
+        category=EventCategory.HOLIDAY,
+        description="School closed for 3 days for Diwali festivities.",
+        badge_color="#10b981",
+        applicable_roles=["STUDENT", "TEACHER", "PARENT", "PRINCIPAL"]
+    ),
+    CalendarEvent(
+        id="EVT-008",
+        title="Term 1 Final Examination Series",
+        date="2026-11-20",
+        category=EventCategory.EXAM,
+        description="Term-end comprehensive summative examinations across all academic subjects.",
+        badge_color="#ef4444",
+        applicable_roles=["STUDENT", "TEACHER", "PARENT", "PRINCIPAL"]
+    ),
+    CalendarEvent(
+        id="EVT-009",
+        title="Annual Sports Day & Athletics Meet",
+        date="2026-12-15",
+        category=EventCategory.EVENT,
+        description="Inter-house track & field competitions, athletics, and cultural drill displays.",
+        badge_color="#3b82f6",
+        applicable_roles=["STUDENT", "TEACHER", "PARENT", "PRINCIPAL"]
+    ),
+    CalendarEvent(
+        id="EVT-010",
+        title="Republic Day Flag Hoisting & Cultural Assembly",
+        date="2027-01-26",
+        category=EventCategory.EVENT,
+        description="Ceremonial flag hoisting at 8:00 AM followed by national anthem and student performances.",
+        badge_color="#3b82f6",
+        applicable_roles=["STUDENT", "TEACHER", "PARENT", "PRINCIPAL"]
+    ),
+    CalendarEvent(
+        id="EVT-011",
+        title="Class 10 Board Examination Practicals & Vivas",
+        date="2027-02-15",
+        category=EventCategory.EXAM,
+        description="External examiner assessments in Science Lab and Computer Science.",
+        badge_color="#ef4444",
+        applicable_roles=["STUDENT", "TEACHER", "PRINCIPAL"]
     )
 ]
 
