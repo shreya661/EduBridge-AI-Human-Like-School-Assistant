@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYZ AI — Human-Like AI School Assistant</title>
+    <meta name="theme-color" content="#1a2332">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=2.7">
+</head>
+<body>
+    <!-- App Shell: two-pane layout -->
+    <div class="app-shell">
+
+        <!-- ============================================================
+             LEFT SIDEBAR
+        ============================================================ -->
+        <aside class="sidebar" id="sidebar">
+
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <div class="logo-mark">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <span class="logo-text">xyzai</span>
+            </div>
+
+            <!-- Current User Profile -->
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar" id="sidebarAvatar">MR</div>
+                <div class="user-info">
+                    <div class="user-full-name" id="sidebarName">Loading...</div>
+                    <div class="user-role-label" id="sidebarRoleLabel">Student account</div>
+                </div>
+                <button class="user-menu-btn" id="openAuthModalBtn" title="Switch account">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                </button>
+            </div>
+
+            <!-- New Conversation -->
+            <button class="btn-new-convo" id="clearChatBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span id="newConvoBtnText">New conversation</span>
+                <kbd>N</kbd>
+            </button>
+
+            <!-- YOUR SPACE nav -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">YOUR SPACE</div>
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" id="navAssistant">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+                        <span id="navAssistantText">Assistant</span>
+                        <div class="nav-badge-dot"></div>
+                    </a>
+                    <a href="#" class="nav-item" id="navCalendar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span id="navCalendarText">School calendar</span>
+                    </a>
+                    <a href="#" class="nav-item" id="navGuides">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <span id="navGuidesText">Role guides</span>
+                    </a>
+                    <a href="#" class="nav-item" id="navAnalytics">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span id="navAnalyticsText">Analytics</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Language Selector -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">LANGUAGE</div>
+                <div class="lang-select-wrap">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <select id="languageSelect" class="lang-select" aria-label="Language Selector">
+                        <option value="en">English</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
+                        <option value="ur">اردو (Urdu)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Role Switcher -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">SWITCH ROLE</div>
+                <div class="role-switcher" id="headerRoleNav">
+                    <button class="role-switch-btn active" data-id="STU10A88F2" data-role="STUDENT">
+                        <span class="role-switch-emoji">🎓</span>
+                        <span class="role-switch-label">Student</span>
+                    </button>
+                    <button class="role-switch-btn" data-id="PAR81L90V7" data-role="PARENT">
+                        <span class="role-switch-emoji">👨‍👩‍👧</span>
+                        <span class="role-switch-label">Parent</span>
+                    </button>
+                    <button class="role-switch-btn" data-id="TCH90K11X4" data-role="TEACHER">
+                        <span class="role-switch-emoji">👩‍🏫</span>
+                        <span class="role-switch-label">Teacher</span>
+                    </button>
+                    <button class="role-switch-btn" data-id="PRN10A99X1" data-role="PRINCIPAL">
+                        <span class="role-switch-emoji">🏛️</span>
+                        <span class="role-switch-label">Principal</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Conversations -->
+            <div class="sidebar-section sidebar-recent">
+                <div class="sidebar-section-header">
+                    <div class="sidebar-section-title">RECENT CONVERSATIONS</div>
+                    <button class="btn-link" style="font-size:11px;color:var(--text-subtle)">All</button>
+                </div>
+                <div class="search-wrap">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="search-input" placeholder="Search conversations" id="convoSearchInput">
+                </div>
+                <div class="recent-list" id="recentConvoList">
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Attendance enquiry</span>
+                            <span class="recent-item-time">Today</span>
+                        </div>
+                    </button>
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Timetable question</span>
+                            <span class="recent-item-time">Yesterday</span>
+                        </div>
+                    </button>
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Exam schedule</span>
+                            <span class="recent-item-time">Mon</span>
+                        </div>
+                    </button>
+                    <button class="recent-item" onclick="">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <div class="recent-item-info">
+                            <span class="recent-item-title">Your information is handled with care</span>
+                            <span class="recent-item-time">Fri</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer: Settings & System Status -->
+            <div class="sidebar-footer-settings">
+                <button class="sidebar-settings-btn" id="sidebarSettingsBtn" title="Preferences & Appearance">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Settings & Themes</span>
+                </button>
+            </div>
+
+        </aside>
+
+        <!-- ============================================================
+             MAIN CONTENT: CHAT AREA
+        ============================================================ -->
+        <main class="chat-main" id="chatPane">
+
+            <!-- Chat Top Bar -->
+            <header class="chat-topbar">
+                <div class="chat-topbar-left">
+                    <div class="chat-topbar-title" id="chatTopbarTitle">STUDENT ASSISTANT</div>
+                    <div class="chat-topbar-subtitle" id="chatTopbarSubtitle">New conversation</div>
+                </div>
+                <div class="chat-topbar-right">
+                    <div class="status-available">
+                        <div class="status-dot"></div>
+                        <span id="availableText">Available to help</span>
+                    </div>
+                    <button class="topbar-icon-btn" title="Notifications">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </button>
+                    <button class="topbar-icon-btn" id="topbarMenuBtn" title="More options">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                    </button>
+
+                    <!-- Avatar persona picker dropdown -->
+                    <div class="avatar-select-wrap">
+                        <select id="avatarPersonaSelect" class="avatar-persona-select" title="Switch AI persona">
+                            <option value="maya">👩‍🏫 Maya</option>
+                            <option value="vikram">👨‍🏫 Vikram</option>
+                            <option value="priya">👩‍💼 Priya</option>
+                            <option value="nova">🤖 Nova</option>
+                        </select>
+                    </div>
+
+                    <!-- Mute / speed controls -->
+                    <button id="toggleAudioMuteBtn" class="topbar-icon-btn" title="Toggle voice">
+                        <svg id="muteIconSvg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    </button>
+                    <select id="voiceSpeedSelect" class="speed-select" title="Speech speed">
+                        <option value="0.8">0.8×</option>
+                        <option value="1.0" selected>1.0×</option>
+                        <option value="1.2">1.2×</option>
+                    </select>
+
+                    <!-- Topbar Settings gear button -->
+                    <button class="topbar-icon-btn" id="topbarSettingsBtn" title="Settings & Appearance">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Date separator -->
+            <div class="date-separator">
+                <span>TODAY</span>
+            </div>
+
+            <!-- Chat messages list -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Initial greeting, populated by JS -->
+                <div class="message assistant" id="initialGreetingRow">
+                    <div class="msg-ai-avatar" id="chatAvatarBadge">👩‍🏫</div>
+                    <div class="msg-content">
+                        <div class="msg-sender-name" id="aiSenderName">Sam</div>
+                        <div class="msg-bubble ai" id="initialGreetingMsg">Hello! I'm your school assistant. How can I help you today?</div>
+                        <div class="msg-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Hub cards (child selectors, quick actions etc.) injected here by JS -->
+            <div id="roleHubInlineContainer"></div>
+
+            <!-- Quick Chips -->
+            <div class="quick-chips-bar" id="quickChips"></div>
+
+            <!-- Input bar -->
+            <div class="chat-input-area">
+                <div class="privacy-note" id="privacyNote">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span id="privacyNoteText">Your school information is handled securely.</span>
+                </div>
+                <form class="chat-input-form" id="chatForm">
+                    <div class="input-row">
+                        <button type="button" id="voiceRecordBtn" class="input-voice-btn" title="Hold to speak">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        </button>
+                        <input
+                            type="text"
+                            id="chatInput"
+                            class="chat-input"
+                            placeholder="Ask anything about school..."
+                            autocomplete="off"
+                            id="chatInput"
+                        >
+                        <button type="button" id="escalateBtn" class="input-escalate-btn" title="Escalate to human">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
+                        </button>
+                        <button type="submit" class="input-send-btn" id="sendBtn" aria-label="Send">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+
+    </div><!-- end app-shell -->
+
+    <!-- ============================================================
+         MODALS
+    ============================================================ -->
+
+    <!-- Escalation Modal -->
+    <div class="modal-overlay" id="escalationModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Submit Escalation Request</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label>Escalation Target</label>
+                <select id="escTargetSelect" class="modal-select">
+                    <option value="teacher">Class Teacher / Subject Staff</option>
+                    <option value="management">School Principal / Administration</option>
+                </select>
+                <label>Reason / Details</label>
+                <textarea id="escReasonInput" rows="3" placeholder="Explain the context for urgent callback..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-ghost" id="cancelEscBtn">Cancel</button>
+                <button class="modal-btn-primary" id="confirmEscBtn">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication & Registration Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card auth-card">
+            <div class="modal-header">
+                <div class="auth-header-title">
+                    <span class="auth-icon">🛡️</span>
+                    <div>
+                        <h3 id="authModalHeading">School Portal Authentication</h3>
+                        <p class="auth-sub">Role-Aware Access · 10-Character Mixed Alphanumeric IDs</p>
+                    </div>
+                </div>
+                <button class="modal-close" id="closeAuthModalBtn">&times;</button>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tabLoginBtn" data-tab="login">Sign In</button>
+                <button class="auth-tab-btn" id="tabSignupBtn" data-tab="signup">New Registration</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="auth-alert hidden" id="authAlert"></div>
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginUserId">Role ID or Email</label>
+                        <div class="input-with-icon">
+                            <span class="field-icon">🆔</span>
+                            <input type="text" id="loginUserId" placeholder="e.g. STU10A88F2, TCH90K11X4" required autocomplete="username">
+                        </div>
+                        <small class="field-hint">Format: 10 chars (STU..., TCH..., PAR..., PRN...)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="input-with-icon">
+                            <span class="field-icon">🔒</span>
+                            <input type="password" id="loginPassword" placeholder="Password@123" required autocomplete="current-password">
+                            <button type="button" class="btn-toggle-pw" id="toggleLoginPwBtn" tabindex="-1">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="modal-btn-primary btn-block" id="submitLoginBtn">
+                        Secure Sign In →
+                    </button>
+                    <div class="demo-accounts-section">
+                        <div class="demo-title">Quick 1-Click Demo:</div>
+                        <div class="demo-chips-grid">
+                            <button type="button" class="demo-chip" data-id="STU10A88F2" data-pw="Password@123">
+                                <span class="chip-icon">🎓</span>
+                                <div class="chip-info"><strong>Student</strong><small>STU10A88F2</small></div>
+                            </button>
+                            <button type="button" class="demo-chip" data-id="TCH90K11X4" data-pw="Password@123">
+                                <span class="chip-icon">👩‍🏫</span>
+                                <div class="chip-info"><strong>Teacher</strong><small>TCH90K11X4</small></div>
+                            </button>
+                            <button type="button" class="demo-chip" data-id="PAR81L90V7" data-pw="Password@123">
+                                <span class="chip-icon">👨‍👩‍👧</span>
+                                <div class="chip-info"><strong>Parent</strong><small>PAR81L90V7</small></div>
+                            </button>
+                            <button type="button" class="demo-chip" data-id="PRN10A99X1" data-pw="Password@123">
+                                <span class="chip-icon">🏛️</span>
+                                <div class="chip-info"><strong>Principal</strong><small>PRN10A99X1</small></div>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- SIGN UP FORM -->
+                <form id="signupForm" class="auth-form hidden">
+                    <div class="form-group">
+                        <label>Select Your School Role</label>
+                        <div class="role-cards-grid">
+                            <label class="role-card-opt active" data-role="STUDENT">
+                                <input type="radio" name="signupRole" value="STUDENT" checked>
+                                <div class="card-content"><span class="card-emoji">🎓</span><span class="card-label">Student</span><span class="card-prefix-tag">STU + 7 chars</span></div>
+                            </label>
+                            <label class="role-card-opt" data-role="TEACHER">
+                                <input type="radio" name="signupRole" value="TEACHER">
+                                <div class="card-content"><span class="card-emoji">👩‍🏫</span><span class="card-label">Teacher</span><span class="card-prefix-tag">TCH + 7 chars</span></div>
+                            </label>
+                            <label class="role-card-opt" data-role="PARENT">
+                                <input type="radio" name="signupRole" value="PARENT">
+                                <div class="card-content"><span class="card-emoji">👨‍👩‍👧</span><span class="card-label">Parent</span><span class="card-prefix-tag">PAR + 7 chars</span></div>
+                            </label>
+                            <label class="role-card-opt" data-role="PRINCIPAL">
+                                <input type="radio" name="signupRole" value="PRINCIPAL">
+                                <div class="card-content"><span class="card-emoji">🏛️</span><span class="card-label">Principal</span><span class="card-prefix-tag">PRN + 7 chars</span></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" placeholder="e.g. Aarav Sharma" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-with-action">
+                            <label for="signupUserId">10-Character ID</label>
+                            <button type="button" class="btn-inline-gen" id="btnAutoGenerateId">🎲 Auto-Generate</button>
+                        </div>
+                        <div class="input-with-icon">
+                            <span class="field-icon">🆔</span>
+                            <input type="text" id="signupUserId" placeholder="e.g. STU83K92P1" maxlength="10" required>
+                        </div>
+                        <div class="id-format-feedback" id="idFormatFeedback">
+                            Format: 3-char prefix (<strong id="idFormatPrefix">STU</strong>) + 7 letters/digits = 10 characters
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address (Optional)</label>
+                        <input type="email" id="signupEmail" placeholder="user@school.edu">
+                    </div>
+                    <div class="form-row" id="roleSpecificFields">
+                        <div class="form-group flex-1" id="classSelectGroup">
+                            <label for="signupClassId">Class / Section</label>
+                            <select id="signupClassId" class="modal-select">
+                                <option value="10-A">Class 10-A</option>
+                                <option value="10-B">Class 10-B</option>
+                                <option value="9-A">Class 9-A</option>
+                                <option value="11-A">Class 11-A</option>
+                                <option value="12-A">Class 12-A</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1 hidden" id="childLinkGroup">
+                            <label for="signupChildId">Child's Student ID</label>
+                            <input type="text" id="signupChildId" placeholder="e.g. STU10A88F2">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <div class="input-with-icon">
+                            <span class="field-icon">🔒</span>
+                            <input type="password" id="signupPassword" placeholder="Minimum 6 characters" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pw" id="toggleSignupPwBtn" tabindex="-1">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="modal-btn-primary btn-block" id="submitSignupBtn">
+                        Create Account & Sign In ✓
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         NEW ADVANCED MODALS
+    ============================================================ -->
+
+    <!-- 1. School Calendar & Timetable Modal -->
+    <div class="modal-backdrop" id="calendarModal">
+        <div class="modal-window wide">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">📅</span>
+                    <div>
+                        <div class="modal-title">School Calendar & Class Schedules</div>
+                        <div class="modal-subtitle">Academic term dates, upcoming examinations, holidays, and live class timetables</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeCalendarModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Pills -->
+                <div class="cal-filter-bar" id="calFilterBar">
+                    <button class="cal-filter-pill active" data-filter="all">All Events</button>
+                    <button class="cal-filter-pill" data-filter="exam">📝 Exams</button>
+                    <button class="cal-filter-pill" data-filter="holiday">🌴 Holidays</button>
+                    <button class="cal-filter-pill" data-filter="meeting">👥 Conferences</button>
+                    <button class="cal-filter-pill" data-filter="event">🏆 Activities</button>
+                    <button class="cal-filter-pill" data-filter="timetable">⏰ Class Timetable</button>
+                </div>
+
+                <!-- Event Timeline List -->
+                <div class="events-timeline-list" id="calendarEventsList">
+                    <!-- Loaded dynamically via /api/v1/calendar/events -->
+                </div>
+
+                <!-- Timetable Container (Hidden by default until selected) -->
+                <div id="timetableSection" class="hidden">
+                    <div class="timetable-header-select">
+                        <strong>Select Class Timetable:</strong>
+                        <select id="timetableClassSelect" class="modal-select" style="width: auto;">
+                            <option value="10-A">Class 10-A (Secondary)</option>
+                            <option value="10-B">Class 10-B (Secondary)</option>
+                            <option value="9-A">Class 9-A (Foundation)</option>
+                        </select>
+                    </div>
+                    <table class="timetable-table" id="timetableTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Time Slot</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-ghost" id="btnAskCalendarAssistant">💬 Ask Assistant about Dates</button>
+                <button class="modal-btn-primary" id="btnCloseCalendarModal">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Analytics Dashboard Modal -->
+    <div class="modal-backdrop" id="analyticsModal">
+        <div class="modal-window wide">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">📊</span>
+                    <div>
+                        <div class="modal-title">Institutional Attendance & Performance Analytics</div>
+                        <div class="modal-subtitle">Real-time attendance rates, class breakdown, and low-attendance flagged alerts</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeAnalyticsModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- KPI Cards -->
+                <div class="kpi-metrics-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiOverallPct">92.4%</div>
+                        <div class="kpi-label">Average Attendance</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiTotalStudents">450</div>
+                        <div class="kpi-label">Total Enrolled</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiPresentToday">416</div>
+                        <div class="kpi-label">Present Today</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" style="color:#ef4444" id="kpiAbsentToday">34</div>
+                        <div class="kpi-label">Absent Today</div>
+                    </div>
+                </div>
+
+                <!-- Charts Split: Pie/Donut Chart + Class Comparison -->
+                <div class="charts-row-split">
+                    <!-- Interactive SVG Pie / Donut Chart -->
+                    <div class="pie-chart-box">
+                        <strong style="font-size:13px;color:var(--text-primary);margin-bottom:8px">Attendance Distribution</strong>
+                        <div class="pie-svg-wrap">
+                            <svg width="140" height="140" viewBox="0 0 42 42" class="donut">
+                                <circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="rgba(0,0,0,0.06)" stroke-width="5"></circle>
+                                <!-- Slices rendered by JS -->
+                                <circle id="pieSlicePresent" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#10b981" stroke-width="5" stroke-dasharray="89.8 10.2" stroke-dashoffset="25"></circle>
+                                <circle id="pieSliceLate" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f59e0b" stroke-width="5" stroke-dasharray="2.7 97.3" stroke-dashoffset="-64.8"></circle>
+                                <circle id="pieSliceExcused" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#6366f1" stroke-width="5" stroke-dasharray="1.8 98.2" stroke-dashoffset="-67.5"></circle>
+                                <circle id="pieSliceAbsent" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#ef4444" stroke-width="5" stroke-dasharray="5.7 94.3" stroke-dashoffset="-69.3"></circle>
+                            </svg>
+                            <div class="pie-center-text">
+                                92.4%
+                                <div class="pie-center-sub">Present Rate</div>
+                            </div>
+                        </div>
+                        <div class="pie-legend">
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#10b981"></div>Present (89.8%)</div>
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#f59e0b"></div>Late (2.7%)</div>
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#6366f1"></div>Excused (1.8%)</div>
+                            <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#ef4444"></div>Absent (5.7%)</div>
+                        </div>
+                    </div>
+
+                    <!-- Class Comparison Bars -->
+                    <div class="class-progress-box">
+                        <strong style="font-size:13px;color:var(--text-primary)">Class-by-Class Attendance</strong>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 10-A</span><span style="color:#10b981">94.2%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:94.2%"></div></div>
+                        </div>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 9-A</span><span style="color:#10b981">93.3%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:93.3%"></div></div>
+                        </div>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 9-B</span><span style="color:#f59e0b">91.5%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:91.5%;background:#f59e0b"></div></div>
+                        </div>
+                        <div class="class-prog-row">
+                            <div class="class-prog-head"><span>Class 10-B</span><span style="color:#f59e0b">90.0%</span></div>
+                            <div class="class-prog-track"><div class="class-prog-fill" style="width:90.0%;background:#f59e0b"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flagged Low Attendance Students -->
+                <div>
+                    <strong style="font-size:13px;color:var(--text-primary);display:block;margin-bottom:8px">⚠️ Low Attendance Alerts (&lt;75%)</strong>
+                    <div class="flagged-table-card">
+                        <table class="flagged-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Attendance</th>
+                                    <th>Reason / Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="flaggedStudentsBody">
+                                <tr>
+                                    <td><code>S002</code></td>
+                                    <td><strong>Priya Sharma</strong></td>
+                                    <td>10-A</td>
+                                    <td><span class="flag-badge">74.5%</span></td>
+                                    <td style="color:var(--text-secondary)">Consecutive 3-day unexcused absence</td>
+                                </tr>
+                                <tr>
+                                    <td><code>S007</code></td>
+                                    <td><strong>Vikas Rao</strong></td>
+                                    <td>9-B</td>
+                                    <td><span class="flag-badge">68.0%</span></td>
+                                    <td style="color:var(--text-secondary)">Low monthly aggregate — notification dispatched</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-ghost" id="btnAskAnalyticsAssistant">💬 Discuss Metrics with Assistant</button>
+                <button class="modal-btn-primary" id="btnCloseAnalyticsModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Role Guidance & RBAC Inspector Modal -->
+    <div class="modal-backdrop" id="roleGuidesModal">
+        <div class="modal-window wide">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">🛡️</span>
+                    <div>
+                        <div class="modal-title">Zero-Trust Role Guidance & Access Matrix</div>
+                        <div class="modal-subtitle">Explore what each role is permitted to perform, security boundaries, and sample queries</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeRoleGuidesModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Role Switcher Tabs -->
+                <div class="role-guide-tabs" id="roleGuideTabs">
+                    <button class="role-guide-tab-btn active" data-role="STUDENT"><span>🎓</span><span>Student</span></button>
+                    <button class="role-guide-tab-btn" data-role="PARENT"><span>👨‍👩‍👧</span><span>Parent</span></button>
+                    <button class="role-guide-tab-btn" data-role="TEACHER"><span>👩‍🏫</span><span>Teacher</span></button>
+                    <button class="role-guide-tab-btn" data-role="PRINCIPAL"><span>🏛️</span><span>Principal</span></button>
+                </div>
+
+                <!-- Active Role Banner -->
+                <div class="role-card-banner" id="roleGuideBanner">
+                    <div class="role-banner-icon" id="roleGuideIcon">🎓</div>
+                    <div>
+                        <div class="role-banner-title" id="roleGuideTitle">Student Role</div>
+                        <div class="role-banner-desc" id="roleGuideDesc">Individual student learner profile with self-attendance tracking, timetable lookups, and direct teacher escalation.</div>
+                    </div>
+                </div>
+
+                <!-- Allowed vs Prohibited Matrix -->
+                <div class="role-perms-split">
+                    <div class="role-perm-card allowed">
+                        <div class="role-perm-head"><span>✓</span><span>Permitted Operations</span></div>
+                        <ul class="role-perm-list" id="rolePermsAllowedList">
+                            <li><span>•</span><span>View personal attendance record & overall %</span></li>
+                            <li><span>•</span><span>Check daily class timetable & upcoming exams</span></li>
+                            <li><span>•</span><span>Ask general school inquiries (holidays, timings, fees)</span></li>
+                            <li><span>•</span><span>Request 1-on-1 teacher consultation & callback tickets</span></li>
+                        </ul>
+                    </div>
+                    <div class="role-perm-card blocked">
+                        <div class="role-perm-head"><span>✕</span><span>Blocked Operations (Zero-Trust RBAC)</span></div>
+                        <ul class="role-perm-list" id="rolePermsBlockedList">
+                            <li><span>•</span><span>Cannot view other students' personal records or grades</span></li>
+                            <li><span>•</span><span>Cannot mark or modify attendance records</span></li>
+                            <li><span>•</span><span>Cannot access administrative or school-wide analytics</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 1-Click Sample Test Prompts -->
+                <div>
+                    <strong style="font-size:13px;color:var(--text-primary);display:block;margin-bottom:8px">⚡ Try Sample Prompts for This Role (1-Click Test):</strong>
+                    <div class="prompt-chips-wrap" id="roleSamplePromptsWrap">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-primary" id="btnCloseRoleGuidesModal">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Settings & Theme Customizer Modal -->
+    <div class="modal-backdrop" id="settingsModal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title-icon">⚙️</span>
+                    <div>
+                        <div class="modal-title">System Settings & Appearance</div>
+                        <div class="modal-subtitle">Customize theme, audio voice preferences, and real-time alert notifications</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeSettingsModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Color Themes Grid -->
+                <div class="settings-group">
+                    <div class="settings-group-title">🎨 Color Theme</div>
+                    <div class="theme-grid" id="themeGrid">
+                        <div class="theme-card active" data-theme="emerald">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#1a2332"></div>
+                                <div class="theme-swatch" style="background:#3d6b5e"></div>
+                                <div class="theme-swatch" style="background:#f5f4f0"></div>
+                            </div>
+                            <div class="theme-card-name">Emerald Slate <span style="font-size:10px">✓</span></div>
+                            <div class="theme-card-sub">Default clean dark/light balance</div>
+                        </div>
+                        <div class="theme-card" data-theme="midnight">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#0b0f19"></div>
+                                <div class="theme-swatch" style="background:#6366f1"></div>
+                                <div class="theme-swatch" style="background:#0f172a"></div>
+                            </div>
+                            <div class="theme-card-name">Midnight Indigo</div>
+                            <div class="theme-card-sub">Deep dark cyber space mode</div>
+                        </div>
+                        <div class="theme-card" data-theme="pearl">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#f8fafc"></div>
+                                <div class="theme-swatch" style="background:#0284c7"></div>
+                                <div class="theme-swatch" style="background:#ffffff"></div>
+                            </div>
+                            <div class="theme-card-name">Pearl Minimal</div>
+                            <div class="theme-card-sub">Crisp, modern light mode</div>
+                        </div>
+                        <div class="theme-card" data-theme="sunset">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#1c1512"></div>
+                                <div class="theme-swatch" style="background:#f59e0b"></div>
+                                <div class="theme-swatch" style="background:#261f1c"></div>
+                            </div>
+                            <div class="theme-card-name">Sunset Amber</div>
+                            <div class="theme-card-sub">Warm espresso & golden amber</div>
+                        </div>
+                        <div class="theme-card" data-theme="forest">
+                            <div class="theme-swatches">
+                                <div class="theme-swatch" style="background:#0f231c"></div>
+                                <div class="theme-swatch" style="background:#10b981"></div>
+                                <div class="theme-swatch" style="background:#142e25"></div>
+                            </div>
+                            <div class="theme-card-name">Forest Sage</div>
+                            <div class="theme-card-sub">Natural deep green & earthy tones</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice & Persona Configuration -->
+                <div class="settings-group">
+                    <div class="settings-group-title">🔊 Audio & Voice Persona</div>
+                    <div class="settings-toggle-row">
+                        <div>
+                            <div class="settings-toggle-label">Auto-Speak AI Responses</div>
+                            <div class="settings-toggle-sub">Read out text replies automatically using Web Speech TTS</div>
+                        </div>
+                        <label class="switch-control">
+                            <input type="checkbox" id="settingAutoSpeak">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-toggle-row">
+                        <div>
+                            <div class="settings-toggle-label">Voice Speech Rate</div>
+                            <div class="settings-toggle-sub">Speed of spoken responses (<span id="speechRateLabel">1.0×</span>)</div>
+                        </div>
+                        <input type="range" id="settingSpeechSlider" min="0.75" max="1.5" step="0.05" value="1.0" style="width:120px">
+                    </div>
+                </div>
+
+                <!-- Notifications & Alert Simulations -->
+                <div class="settings-group">
+                    <div class="settings-group-title">🔔 Alerts & Simulations</div>
+                    <div class="settings-toggle-row">
+                        <div>
+                            <div class="settings-toggle-label">WhatsApp / SMS Absence Alert Simulation</div>
+                            <div class="settings-toggle-sub">Trigger real-time popup toast to parents when an Absent mark is recorded</div>
+                        </div>
+                        <label class="switch-control">
+                            <input type="checkbox" id="settingSmsAlerts" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Active Identity & RBAC Info -->
+                <div class="settings-group" style="background:rgba(0,0,0,0.02)">
+                    <div class="settings-group-title">🛡️ Active Session & Clearance</div>
+                    <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;color:var(--text-secondary)">
+                        <div>User ID: <strong id="settingsUserId" style="color:var(--text-primary);font-family:monospace">STU10A88F2</strong></div>
+                        <div>Role: <strong id="settingsUserRole" style="color:var(--accent)">STUDENT</strong></div>
+                        <div>Zero-Trust RBAC Policy: <code>Strict Least Privilege v2.4</code></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-primary" id="btnCloseSettingsModal">Save & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS / Toast container -->
+    <div class="sms-toast-container" id="smsToastContainer"></div>
+
+    <!-- Hidden legacy elements (kept for JS compatibility) -->
+    <div style="display:none">
+        <input id="avatarModelPicker" type="hidden">
+        <img id="avatarImg" alt="avatar">
+        <div id="avatarGlow"></div>
+        <div id="avatarSpeakingPulse"></div>
+        <div id="audioVisualizer"></div>
+        <div id="personaIcon"></div>
+        <div id="personaName"></div>
+        <div id="personaTone"></div>
+        <div id="avatarPortraitWrap"></div>
+        <div id="activePersonaCard"></div>
+        <span id="liveReadyStatus"></span>
+        <div id="auditStream"></div>
+        <div id="dynamicRoleCardContainer"></div>
+        <span id="currentRoleBadge"></span>
+        <span id="brandSubtitle"></span>
+        <span id="userDisplayName"></span>
+        <span id="userDisplayId"></span>
+        <span id="userAvatarIcon"></span>
+        <span id="authBtnLabel"></span>
+        <span id="userIdentityTag"></span>
+        <span id="voiceBtnText"></span>
+        <span id="escalateBtnText"></span>
+        <span id="sendBtnSpan"></span>
+        <div id="avatarPaneHeading"></div>
+        <div id="chatPaneHeading"></div>
+        <select id="escTargetSelectOld"></select>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         FLOATING CHAT WIDGET — XYZ AI Knowledge & Homework Tutor
+         ════════════════════════════════════════════════════════════ -->
+    <div id="floatingChatWidget" class="fcw-container">
+
+        <!-- Launcher Bubble -->
+        <button id="fcwLauncher" class="fcw-launcher" title="Ask AI Tutor" aria-label="Open AI Tutor Chat">
+            <div class="fcw-launcher-inner">
+                <span class="fcw-launcher-icon">🎓</span>
+                <span class="fcw-launcher-pulse"></span>
+            </div>
+            <div class="fcw-unread-badge" id="fcwUnreadBadge" style="display:none">1</div>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="fcwWindow" class="fcw-window" style="display:none">
+            <!-- Header -->
+            <div class="fcw-header">
+                <div class="fcw-header-left">
+                    <div class="fcw-avatar">🎓</div>
+                    <div class="fcw-header-info">
+                        <div class="fcw-header-name">XYZ AI Tutor</div>
+                        <div class="fcw-header-status">
+                            <span class="fcw-status-dot"></span>
+                            <span>School Knowledge Assistant</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fcw-header-actions">
+                    <button class="fcw-icon-btn" id="fcwMinimizeBtn" title="Minimize">−</button>
+                    <button class="fcw-icon-btn" id="fcwCloseBtn" title="Close">✕</button>
+                </div>
+            </div>
+
+            <!-- Live Chat Status Banner (shown during human-in-the-loop chat) -->
+            <div class="fcw-live-banner" id="fcwLiveBanner" style="display:none">
+                <div class="fcw-live-banner-left">
+                    <span class="fcw-live-pulse-dot"></span>
+                    <span id="fcwLiveBannerText">Live Teacher Chat Active</span>
+                </div>
+                <button class="fcw-live-end-btn" id="fcwLiveEndBtn">End</button>
+            </div>
+
+            <!-- Mode Switcher Bar -->
+            <div class="fcw-mode-bar" id="fcwModeBar">
+                <button class="fcw-mode-pill active" data-mode="all">⚡ All</button>
+                <button class="fcw-mode-pill" data-mode="operations">📊 Operations</button>
+                <button class="fcw-mode-pill" data-mode="tutor">🧠 Tutor</button>
+                <button class="fcw-mode-pill" data-mode="faq">📖 FAQ</button>
+                <button class="fcw-mode-pill" data-mode="quiz">🎯 Quiz</button>
+            </div>
+
+            <!-- Message List -->
+            <div class="fcw-messages" id="fcwMessages">
+                <!-- Welcome message injected by JS -->
+            </div>
+
+            <!-- Suggestion Chips Row -->
+            <div class="fcw-chips-bar" id="fcwChipsBar">
+                <div class="fcw-chips-scroll" id="fcwChipsScroll">
+                    <!-- Chips injected by JS -->
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="fcw-input-bar">
+                <textarea
+                    id="fcwInput"
+                    class="fcw-input"
+                    placeholder="Ask about school, homework, policies…"
+                    rows="1"
+                    maxlength="500"
+                ></textarea>
+                <button id="fcwSendBtn" class="fcw-send-btn" title="Send">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Powered by footer -->
+            <div class="fcw-footer-bar">
+                <span>Powered by <strong>XYZ AI</strong> · School Knowledge Base</span>
+            </div>
+        </div>
+    </div>
+    <!-- END FLOATING CHAT WIDGET -->
+
+    <script src="/static/app.js?v=2.6"></script>
+</body>
+</html>
