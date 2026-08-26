@@ -2486,8 +2486,8 @@ function fcwAddBotMessage(text, animate = true) {
     const htmlContent = fcwMarkdownLite(text);
 
     msgEl.innerHTML = `
-        <div class="fcw-msg-icon">🎓</div>
-        <div class="fcw-msg-bubble">${htmlContent}</div>
+        <div class="fcw-msg-icon" style="background:var(--accent,#10b981);color:#ffffff">🎓</div>
+        <div class="fcw-msg-bubble" style="color:#ffffff !important;background:#132a22 !important;border:1px solid rgba(255,255,255,0.2) !important;box-shadow:0 4px 14px rgba(0,0,0,0.3) !important;">${htmlContent}</div>
     `;
     FCW.messages.appendChild(msgEl);
     fcwScrollBottom();
@@ -2504,8 +2504,8 @@ function fcwAddLiveTeacherMessage(text, teacherName = 'Ms. Priya Sharma') {
     const htmlContent = fcwMarkdownLite(text);
 
     msgEl.innerHTML = `
-        <div class="fcw-msg-icon">👩‍🏫</div>
-        <div class="fcw-msg-bubble">
+        <div class="fcw-msg-icon" style="background:#3b82f6;color:#ffffff">👩‍🏫</div>
+        <div class="fcw-msg-bubble" style="color:#ffffff !important;background:#1e3a8a !important;border:1px solid #3b82f6 !important;">
             <div style="font-size:10.5px;font-weight:700;color:#93c5fd;margin-bottom:3px">${fcwEscape(teacherName)} (Teacher)</div>
             ${htmlContent}
         </div>
@@ -2516,7 +2516,7 @@ function fcwAddLiveTeacherMessage(text, teacherName = 'Ms. Priya Sharma') {
 
 function fcwAddSystemMessage(text) {
     const el = document.createElement('div');
-    el.style.cssText = 'font-size:11px;text-align:center;color:rgba(255,255,255,0.75);margin:4px 0;padding:4px 8px;background:rgba(0,0,0,0.25);border-radius:6px';
+    el.style.cssText = 'font-size:11px;text-align:center;color:#ffffff;margin:4px 0;padding:4px 8px;background:rgba(0,0,0,0.35);border-radius:6px';
     el.textContent = text;
     FCW.messages.appendChild(el);
     fcwScrollBottom();
@@ -2531,11 +2531,11 @@ function fcwShowTyping() {
     wrap.className = 'fcw-msg bot';
     wrap.id = 'fcwTypingWrap';
     wrap.innerHTML = `
-        <div class="fcw-msg-icon">🎓</div>
-        <div class="fcw-typing">
-            <div class="fcw-typing-dot"></div>
-            <div class="fcw-typing-dot"></div>
-            <div class="fcw-typing-dot"></div>
+        <div class="fcw-msg-icon" style="background:var(--accent,#10b981);color:#ffffff">🎓</div>
+        <div class="fcw-typing" style="background:#132a22;border:1px solid rgba(255,255,255,0.15)">
+            <div class="fcw-typing-dot" style="background:#4ade80"></div>
+            <div class="fcw-typing-dot" style="background:#4ade80"></div>
+            <div class="fcw-typing-dot" style="background:#4ade80"></div>
         </div>
     `;
     FCW.messages.appendChild(wrap);
@@ -2558,6 +2558,7 @@ function fcwLoadChips(chips) {
     chips.forEach(chip => {
         const btn = document.createElement('button');
         btn.className = 'fcw-chip';
+        btn.style.cssText = 'color:#ffffff !important;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.08)';
         btn.textContent = chip;
         btn.addEventListener('click', () => {
             if (FCW.input) {
@@ -2603,28 +2604,29 @@ function fcwMarkdownLite(text) {
     if (!text) return '';
     return text
         // Bold
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#ffffff !important;font-weight:700">$1</strong>')
         // Italic
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\*(.+?)\*/g, '<em style="color:#f1f5f9 !important">$1</em>')
         // Inline code
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/`([^`]+)`/g, '<code style="color:#86efac !important;background:rgba(0,0,0,0.5) !important;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px;border:1px solid rgba(255,255,255,0.1)">$1</code>')
         // Code block
-        .replace(/```[\w]*\n?([\s\S]+?)```/g, '<pre>$1</pre>')
+        .replace(/```[\w]*\n?([\s\S]+?)```/g, '<pre style="color:#f8fafc !important;background:rgba(0,0,0,0.6) !important;padding:8px 10px;border-radius:8px;font-size:11.5px;margin:6px 0;overflow-x:auto;white-space:pre-wrap;border:1px solid rgba(255,255,255,0.15)">$1</pre>')
         // Markdown table row
         .replace(/^\|(.+)\|$/gm, (match) => {
             const cells = match.split('|').slice(1, -1);
             const isHeaderDivider = cells.every(c => c.trim().match(/^:?-+:?$/));
             if (isHeaderDivider) return '';
             const tdType = match.includes('---') ? 'th' : 'td';
-            const cellHtml = cells.map(c => `<${tdType}>${c.trim()}</${tdType}>`).join('');
-            return `<tr>${cellHtml}</tr>`;
+            const cellHtml = cells.map(c => `<${tdType} style="border:1px solid rgba(255,255,255,0.25);padding:4px 8px;color:#ffffff !important;background:${tdType==='th'?'rgba(255,255,255,0.15)':'transparent'}">${c.trim()}</${tdType}>`).join('');
+            return `<tr style="color:#ffffff !important">${cellHtml}</tr>`;
         })
         // List items
-        .replace(/^[•\-\*] (.+)$/gm, '<li>• $1</li>')
-        .replace(/^\d+\. (.+)$/gm, (m, p) => `<li>${p}</li>`)
+        .replace(/^[•\-\*] (.+)$/gm, '<li style="color:#ffffff !important;margin:3px 0;list-style:none;padding-left:4px"><span style="color:#86efac;margin-right:6px">•</span><span style="color:#ffffff !important">$1</span></li>')
+        .replace(/^\d+\. (.+)$/gm, (m, p) => `<li style="color:#ffffff !important;margin:3px 0;list-style:decimal;margin-left:18px"><span style="color:#ffffff !important">${p}</span></li>`)
         // Links
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#38bdf8 !important;text-decoration:underline" target="_blank">$1</a>')
         // Newlines
         .replace(/\n/g, '<br>');
 }
+
 
