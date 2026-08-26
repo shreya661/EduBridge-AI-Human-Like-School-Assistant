@@ -2042,9 +2042,12 @@ const FCW = {
     isOpen: false,
     isTyping: false,
     unreadCount: 0,
+    currentMode: 'all',
+    activeLiveSessionId: null,
+    livePollInterval: null,
     conversationHistory: [],
 
-    // DOM refs (populated in init)
+    // DOM refs
     launcher: null,
     window: null,
     messages: null,
@@ -2054,52 +2057,109 @@ const FCW = {
     unreadBadge: null,
     minimizeBtn: null,
     closeBtn: null,
+    modeBar: null,
+    liveBanner: null,
+    liveBannerText: null,
+    liveEndBtn: null,
 
-    WELCOME_MSG: "👋 Hi! I'm your **XYZ AI Tutor**.\n\nAsk me about school policies, exam schedules, homework help, Newton's laws, photosynthesis, essay writing, fees, holidays, and more!\n\nTry one of the quick suggestions below 👇",
+    WELCOME_MSG: "👋 Hi! I'm your **XYZ AI Tutor**.\n\nAsk me about school policies, exam schedules, homework help, Newton's laws, photosynthesis, essay writing, fees, holidays, or try an interactive quiz!\n\nSwitch modes or pick a quick suggestion below 👇",
 
-    DEFAULT_CHIPS: [
-        "School timings?",
-        "Exam schedule?",
-        "Attendance policy?",
-        "Explain photosynthesis",
-        "Newton's laws?",
-        "Essay writing tips?",
-        "Fee structure?",
-        "Upcoming holidays?",
-        "Contact a teacher?",
-    ],
+    CHIP_MAP: {
+        all: [
+            "School timings?",
+            "Upcoming holidays?",
+            "Attendance policy?",
+            "Explain photosynthesis",
+            "Newton's laws of motion",
+            "How to write an essay?",
+            "Fee structure?",
+            "Exam countdown?",
+            "Quiz: Photosynthesis",
+        ],
+        operations: [
+            "What is my attendance?",
+            "Mark Rahul present today",
+            "Show Class 10-A roster",
+            "Request teacher consultation",
+            "View attendance analytics",
+        ],
+        tutor: [
+            "Explain photosynthesis",
+            "Newton's laws of motion",
+            "How do I solve a quadratic equation?",
+            "What are the parts of a cell?",
+            "How to write an essay?",
+            "Exam preparation tips?",
+        ],
+        faq: [
+            "What are the school timings?",
+            "Upcoming school holidays?",
+            "What is the fee structure?",
+            "School uniform rules?",
+            "Library borrowing rules?",
+            "How does admission work?",
+        ],
+        quiz: [
+            "Quiz: Photosynthesis",
+            "Quiz: Newton's Laws",
+            "Quiz: Quadratic Equations",
+            "Quiz: Cell Biology",
+            "Quiz: Essay Writing",
+        ]
+    }
 };
 
 function initFloatingChatWidget() {
-    FCW.launcher     = document.getElementById('fcwLauncher');
-    FCW.window       = document.getElementById('fcwWindow');
-    FCW.messages     = document.getElementById('fcwMessages');
-    FCW.input        = document.getElementById('fcwInput');
-    FCW.sendBtn      = document.getElementById('fcwSendBtn');
-    FCW.chipsScroll  = document.getElementById('fcwChipsScroll');
-    FCW.unreadBadge  = document.getElementById('fcwUnreadBadge');
-    FCW.minimizeBtn  = document.getElementById('fcwMinimizeBtn');
-    FCW.closeBtn     = document.getElementById('fcwCloseBtn');
+    FCW.launcher       = document.getElementById('fcwLauncher');
+    FCW.window         = document.getElementById('fcwWindow');
+    FCW.messages       = document.getElementById('fcwMessages');
+    FCW.input          = document.getElementById('fcwInput');
+    FCW.sendBtn        = document.getElementById('fcwSendBtn');
+    FCW.chipsScroll    = document.getElementById('fcwChipsScroll');
+    FCW.unreadBadge    = document.getElementById('fcwUnreadBadge');
+    FCW.minimizeBtn    = document.getElementById('fcwMinimizeBtn');
+    FCW.closeBtn       = document.getElementById('fcwCloseBtn');
+    FCW.modeBar        = document.getElementById('fcwModeBar');
+    FCW.liveBanner     = document.getElementById('fcwLiveBanner');
+    FCW.liveBannerText = document.getElementById('fcwLiveBannerText');
+    FCW.liveEndBtn     = document.getElementById('fcwLiveEndBtn');
 
-    if (!FCW.launcher) return; // Safety guard
+    if (!FCW.launcher) return;
 
     // Event listeners
     FCW.launcher.addEventListener('click', fcwToggle);
-    FCW.closeBtn.addEventListener('click', fcwClose);
-    FCW.minimizeBtn.addEventListener('click', fcwClose);
-    FCW.sendBtn.addEventListener('click', fcwSend);
-    FCW.input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            fcwSend();
-        }
-    });
-    FCW.input.addEventListener('input', fcwAutoGrow);
+    if (FCW.closeBtn) FCW.closeBtn.addEventListener('click', fcwClose);
+    if (FCW.minimizeBtn) FCW.minimizeBtn.addEventListener('click', fcwClose);
+    if (FCW.sendBtn) FCW.sendBtn.addEventListener('click', fcwSend);
+    if (FCW.liveEndBtn) FCW.liveEndBtn.addEventListener('click', fcwEndLiveChat);
 
-    // Load suggestion chips
-    fcwLoadChips(FCW.DEFAULT_CHIPS);
+    if (FCW.input) {
+        FCW.input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                fcwSend();
+            }
+        });
+        FCW.input.addEventListener('input', fcwAutoGrow);
+    }
 
-    // Show unread badge after a short delay to entice the user
+    // Mode Switcher Pills
+    if (FCW.modeBar) {
+        const pills = FCW.modeBar.querySelectorAll('.fcw-mode-pill');
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                pills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                const mode = pill.getAttribute('data-mode') || 'all';
+                fcwSetMode(mode);
+            });
+        });
+    }
+
+    // Load initial suggestion chips
+    fcwLoadChips(FCW.CHIP_MAP.all);
+
+    // Show unread badge after a short delay
     setTimeout(() => {
         if (!FCW.isOpen) {
             FCW.unreadCount = 1;
@@ -2114,25 +2174,21 @@ function fcwToggle() {
 
 function fcwOpen() {
     FCW.isOpen = true;
-    FCW.window.style.display = 'flex';
+    if (FCW.window) FCW.window.style.display = 'flex';
 
-    // Reset unread badge
     FCW.unreadCount = 0;
     fcwUpdateBadge();
 
-    // Show welcome message if first time
     if (FCW.conversationHistory.length === 0) {
         fcwAddBotMessage(FCW.WELCOME_MSG, false);
     }
 
-    // Focus input
-    setTimeout(() => FCW.input.focus(), 120);
+    setTimeout(() => { if (FCW.input) FCW.input.focus(); }, 120);
 }
 
 function fcwClose() {
     FCW.isOpen = false;
-    // Animate out
-    FCW.window.style.animation = 'none';
+    if (!FCW.window) return;
     FCW.window.style.opacity = '0';
     FCW.window.style.transform = 'translateY(20px) scale(0.95)';
     FCW.window.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
@@ -2141,26 +2197,34 @@ function fcwClose() {
         FCW.window.style.opacity = '';
         FCW.window.style.transform = '';
         FCW.window.style.transition = '';
-        FCW.window.style.animation = '';
     }, 180);
 }
 
+function fcwSetMode(mode) {
+    FCW.currentMode = mode;
+    const chips = FCW.CHIP_MAP[mode] || FCW.CHIP_MAP.all;
+    fcwLoadChips(chips);
+}
+
 async function fcwSend() {
+    if (!FCW.input) return;
     const text = FCW.input.value.trim();
     if (!text || FCW.isTyping) return;
 
-    // Add user message
     fcwAddUserMessage(text);
     FCW.input.value = '';
     fcwAutoGrow();
 
-    // Track in history
     FCW.conversationHistory.push({ role: 'user', text });
 
-    // Show typing indicator
+    // Handle Live Chat Active Session
+    if (FCW.activeLiveSessionId) {
+        await fcwSendLiveMessage(text);
+        return;
+    }
+
     fcwShowTyping();
 
-    // Call the backend chatbot API
     try {
         const currentRole = (window.currentRole || 'STUDENT').toUpperCase();
         const resp = await fetch('/api/v1/chatbot/message', {
@@ -2177,25 +2241,233 @@ async function fcwSend() {
         const data = await resp.json();
 
         fcwHideTyping();
+
+        // 1. Live Chat Request
+        if (data.intent_hint === 'live_chat_request') {
+            fcwAddBotMessage(data.answer, true);
+            await fcwStartLiveChat('TEACHER', text);
+            return;
+        }
+
+        // 2. Render Bot Message
         fcwAddBotMessage(data.answer, true);
 
-        // Update suggestion chips if response has contextual ones
+        // 3. Render Interactive Quiz Card if present
+        if (data.quiz_data && data.quiz_data.questions) {
+            fcwRenderQuizCard(data.quiz_data);
+        }
+
+        // 4. Render Exam Countdown Card if present
+        if (data.countdown_data && data.countdown_data.exam) {
+            fcwRenderCountdownCard(data.countdown_data);
+        }
+
+        // 5. Update chips if provided
         if (data.suggestions && data.suggestions.length > 0) {
             fcwLoadChips(data.suggestions);
         }
 
-        // Track in history
         FCW.conversationHistory.push({ role: 'bot', text: data.answer });
 
     } catch (err) {
         fcwHideTyping();
-        fcwAddBotMessage(
-            "⚠️ I'm having trouble connecting to the knowledge base right now. Please try again in a moment.",
-            true
-        );
+        fcwAddBotMessage("⚠️ Connection error. Please verify the server is running and try again.", true);
         console.warn('[FCW] API error:', err);
     }
 }
+
+// ── Live Human-in-the-Loop Chat Controller ────────────────────────────────────
+
+async function fcwStartLiveChat(targetRole = 'TEACHER', reason = 'General student consultation') {
+    try {
+        const currentRole = (window.currentRole || 'STUDENT').toUpperCase();
+        const userId = window.activeUserId || 'STU10A88F2';
+
+        const resp = await fetch('/api/v1/chatbot/live/request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                requester_id: userId,
+                requester_role: currentRole,
+                target_role: targetRole,
+                reason: reason
+            })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const res = await resp.json();
+
+        FCW.activeLiveSessionId = res.session_id;
+
+        if (FCW.liveBanner) {
+            FCW.liveBanner.style.display = 'flex';
+            if (FCW.liveBannerText) {
+                FCW.liveBannerText.textContent = `Live Chat with Ms. Priya Sharma (${targetRole})`;
+            }
+        }
+
+        fcwAddSystemMessage("🟢 Connected to Ms. Priya Sharma. Type your message below to chat in real time.");
+        fcwLoadChips(["I have a question about my homework", "Can we schedule a meeting?", "Thank you, that's all"]);
+
+    } catch (e) {
+        console.warn('[FCW] Live chat start error:', e);
+    }
+}
+
+async function fcwSendLiveMessage(text) {
+    if (!FCW.activeLiveSessionId) return;
+    fcwShowTyping();
+
+    try {
+        const currentRole = (window.currentRole || 'STUDENT').toLowerCase();
+        const senderName = window.activeUserName || 'Rahul Sharma';
+
+        const resp = await fetch(`/api/v1/chatbot/live/${FCW.activeLiveSessionId}/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sender: senderName,
+                sender_role: currentRole,
+                text: text
+            })
+        });
+
+        fcwHideTyping();
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const res = await resp.json();
+
+        // If simulated teacher replied
+        if (res.teacher_reply) {
+            setTimeout(() => {
+                fcwAddLiveTeacherMessage(res.teacher_reply.text, res.teacher_reply.sender);
+            }, 600);
+        }
+
+    } catch (e) {
+        fcwHideTyping();
+        console.warn('[FCW] Live send error:', e);
+    }
+}
+
+async function fcwEndLiveChat() {
+    if (!FCW.activeLiveSessionId) return;
+    try {
+        await fetch(`/api/v1/chatbot/live/${FCW.activeLiveSessionId}/close`, { method: 'POST' });
+    } catch (e) {}
+
+    FCW.activeLiveSessionId = null;
+    if (FCW.liveBanner) FCW.liveBanner.style.display = 'none';
+
+    fcwAddSystemMessage("🔴 Live chat session ended. Switched back to XYZ AI Tutor mode.");
+    fcwSetMode(FCW.currentMode);
+}
+
+// ── Interactive Quiz Card Renderer ───────────────────────────────────────────
+
+function fcwRenderQuizCard(quizData) {
+    if (!quizData || !quizData.questions || !FCW.messages) return;
+
+    const card = document.createElement('div');
+    card.className = 'fcw-quiz-card';
+
+    const topicBadge = document.createElement('div');
+    topicBadge.className = 'fcw-quiz-topic-badge';
+    topicBadge.textContent = `${quizData.emoji || '🎯'} ${quizData.label} Quiz`;
+    card.appendChild(topicBadge);
+
+    quizData.questions.forEach((q, idx) => {
+        const qWrap = document.createElement('div');
+        qWrap.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-top:6px;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px';
+
+        const qText = document.createElement('div');
+        qText.className = 'fcw-quiz-q-text';
+        qText.textContent = `Q${idx + 1}. ${q.question}`;
+        qWrap.appendChild(qText);
+
+        const optList = document.createElement('div');
+        optList.className = 'fcw-quiz-options-list';
+
+        const optButtons = [];
+
+        q.options.forEach((opt, optIdx) => {
+            const btn = document.createElement('button');
+            btn.className = 'fcw-quiz-opt-btn';
+            const optLetter = String.fromCharCode(65 + optIdx);
+            btn.innerHTML = `<span style="font-weight:700;color:var(--accent,#10b981);min-width:16px">${optLetter}.</span> <span>${fcwEscape(opt)}</span>`;
+
+            btn.addEventListener('click', () => {
+                // Disable all buttons in this question
+                optButtons.forEach(b => b.disabled = true);
+
+                const isCorrect = (optIdx === q.correct_index);
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    btn.innerHTML = `<span>✓</span> <span>${fcwEscape(opt)}</span>`;
+                } else {
+                    btn.classList.add('wrong');
+                    btn.innerHTML = `<span>✗</span> <span>${fcwEscape(opt)}</span>`;
+                    // Highlight correct one
+                    const correctBtn = optButtons[q.correct_index];
+                    if (correctBtn) correctBtn.classList.add('correct');
+                }
+
+                // Reveal explanation
+                if (q.explanation) {
+                    const expBox = document.createElement('div');
+                    expBox.className = 'fcw-quiz-exp-box';
+                    expBox.innerHTML = fcwMarkdownLite(q.explanation);
+                    qWrap.appendChild(expBox);
+                    fcwScrollBottom();
+                }
+            });
+
+            optButtons.push(btn);
+            optList.appendChild(btn);
+        });
+
+        qWrap.appendChild(optList);
+        card.appendChild(qWrap);
+    });
+
+    FCW.messages.appendChild(card);
+    fcwScrollBottom();
+}
+
+// ── Exam Countdown Card Renderer ─────────────────────────────────────────────
+
+function fcwRenderCountdownCard(countdownData) {
+    if (!countdownData || !countdownData.exam || !FCW.messages) return;
+    const exam = countdownData.exam;
+
+    const card = document.createElement('div');
+    card.className = 'fcw-countdown-card';
+
+    card.innerHTML = `
+        <div class="fcw-countdown-header">
+            <div class="fcw-countdown-title">${exam.emoji || '📝'} ${exam.name}</div>
+            <div class="fcw-countdown-badge">Active Term</div>
+        </div>
+        <div class="fcw-countdown-days-big">
+            ${exam.days_remaining} <span>days remaining (${exam.exam_date_str})</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">
+            Subjects: <strong>${exam.subjects.join(', ')}</strong>
+        </div>
+        <div class="fcw-study-plan-list">
+            ${(countdownData.study_plan || []).map(p => `
+                <div class="fcw-study-item">
+                    <span>${p.emoji}</span>
+                    <span><strong>${p.week}:</strong> ${p.focus}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    FCW.messages.appendChild(card);
+    fcwScrollBottom();
+}
+
+// ── Message Renderers ────────────────────────────────────────────────────────
 
 function fcwAddUserMessage(text) {
     const msgEl = document.createElement('div');
@@ -2211,8 +2483,6 @@ function fcwAddUserMessage(text) {
 function fcwAddBotMessage(text, animate = true) {
     const msgEl = document.createElement('div');
     msgEl.className = 'fcw-msg bot';
-
-    // Convert basic markdown to HTML
     const htmlContent = fcwMarkdownLite(text);
 
     msgEl.innerHTML = `
@@ -2222,17 +2492,40 @@ function fcwAddBotMessage(text, animate = true) {
     FCW.messages.appendChild(msgEl);
     fcwScrollBottom();
 
-    // If widget is closed, increment unread
     if (!FCW.isOpen && animate) {
         FCW.unreadCount++;
         fcwUpdateBadge();
     }
 }
 
+function fcwAddLiveTeacherMessage(text, teacherName = 'Ms. Priya Sharma') {
+    const msgEl = document.createElement('div');
+    msgEl.className = 'fcw-msg live-teacher';
+    const htmlContent = fcwMarkdownLite(text);
+
+    msgEl.innerHTML = `
+        <div class="fcw-msg-icon">👩‍🏫</div>
+        <div class="fcw-msg-bubble">
+            <div style="font-size:10.5px;font-weight:700;color:#93c5fd;margin-bottom:3px">${fcwEscape(teacherName)} (Teacher)</div>
+            ${htmlContent}
+        </div>
+    `;
+    FCW.messages.appendChild(msgEl);
+    fcwScrollBottom();
+}
+
+function fcwAddSystemMessage(text) {
+    const el = document.createElement('div');
+    el.style.cssText = 'font-size:11px;text-align:center;color:rgba(255,255,255,0.75);margin:4px 0;padding:4px 8px;background:rgba(0,0,0,0.25);border-radius:6px';
+    el.textContent = text;
+    FCW.messages.appendChild(el);
+    fcwScrollBottom();
+}
+
 let fcwTypingEl = null;
 function fcwShowTyping() {
     FCW.isTyping = true;
-    FCW.sendBtn.disabled = true;
+    if (FCW.sendBtn) FCW.sendBtn.disabled = true;
 
     const wrap = document.createElement('div');
     wrap.className = 'fcw-msg bot';
@@ -2252,7 +2545,7 @@ function fcwShowTyping() {
 
 function fcwHideTyping() {
     FCW.isTyping = false;
-    FCW.sendBtn.disabled = false;
+    if (FCW.sendBtn) FCW.sendBtn.disabled = false;
     if (fcwTypingEl) {
         fcwTypingEl.remove();
         fcwTypingEl = null;
@@ -2267,8 +2560,10 @@ function fcwLoadChips(chips) {
         btn.className = 'fcw-chip';
         btn.textContent = chip;
         btn.addEventListener('click', () => {
-            FCW.input.value = chip;
-            fcwSend();
+            if (FCW.input) {
+                FCW.input.value = chip;
+                fcwSend();
+            }
         });
         FCW.chipsScroll.appendChild(btn);
     });
@@ -2297,7 +2592,7 @@ function fcwAutoGrow() {
 }
 
 function fcwEscape(str) {
-    return str
+    return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -2305,23 +2600,31 @@ function fcwEscape(str) {
 }
 
 function fcwMarkdownLite(text) {
-    // Convert limited markdown subset to HTML for chat bubbles
+    if (!text) return '';
     return text
-        // Bold **text**
+        // Bold
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        // Italic *text*
+        // Italic
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        // Inline code `code`
-        .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;font-size:0.9em">$1</code>')
-        // Code block ```...``` (simple single line)
-        .replace(/```[\w]*\n?([\s\S]+?)```/g, '<pre style="background:rgba(0,0,0,0.25);padding:8px 10px;border-radius:8px;font-size:11.5px;margin:4px 0;overflow-x:auto;white-space:pre-wrap">$1</pre>')
-        // Bullet points (• or - or *)
-        .replace(/^[•\-\*] (.+)$/gm, '<li style="margin:2px 0;list-style:none;padding-left:12px">• $1</li>')
-        // Numbered lists
-        .replace(/^\d+\. (.+)$/gm, (m, p) => `<li style="margin:2px 0;list-style:decimal;margin-left:18px">${p}</li>`)
+        // Inline code
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        // Code block
+        .replace(/```[\w]*\n?([\s\S]+?)```/g, '<pre>$1</pre>')
+        // Markdown table row
+        .replace(/^\|(.+)\|$/gm, (match) => {
+            const cells = match.split('|').slice(1, -1);
+            const isHeaderDivider = cells.every(c => c.trim().match(/^:?-+:?$/));
+            if (isHeaderDivider) return '';
+            const tdType = match.includes('---') ? 'th' : 'td';
+            const cellHtml = cells.map(c => `<${tdType}>${c.trim()}</${tdType}>`).join('');
+            return `<tr>${cellHtml}</tr>`;
+        })
+        // List items
+        .replace(/^[•\-\*] (.+)$/gm, '<li>• $1</li>')
+        .replace(/^\d+\. (.+)$/gm, (m, p) => `<li>${p}</li>`)
         // Links
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--accent);text-decoration:underline" target="_blank">$1</a>')
-        // New lines → <br>
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
+        // Newlines
         .replace(/\n/g, '<br>');
 }
 

@@ -2002,11 +2002,11 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 /* ── Chat Window ─────────────────────────────────────────────────────────── */
 .fcw-window {
     width: 360px;
-    height: 520px;
+    height: 540px;
     border-radius: 18px;
     background: var(--bg-secondary, #142e25);
-    border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
-    box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+    border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -2023,7 +2023,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
+    padding: 13px 16px;
     background: var(--accent, #10b981);
     background: linear-gradient(135deg, var(--accent, #10b981) 0%, color-mix(in srgb, var(--accent, #10b981) 70%, #000) 100%);
     flex-shrink: 0;
@@ -2033,7 +2033,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.22);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2043,7 +2043,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 .fcw-header-name {
     font-size: 14px;
     font-weight: 700;
-    color: #fff;
+    color: #ffffff;
     letter-spacing: 0.01em;
 }
 .fcw-header-status {
@@ -2051,7 +2051,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     align-items: center;
     gap: 5px;
     font-size: 11px;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.88);
     margin-top: 2px;
 }
 .fcw-status-dot {
@@ -2072,8 +2072,8 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     height: 28px;
     border-radius: 50%;
     border: none;
-    background: rgba(255,255,255,0.15);
-    color: #fff;
+    background: rgba(255,255,255,0.18);
+    color: #ffffff;
     font-size: 14px;
     cursor: pointer;
     display: flex;
@@ -2082,7 +2082,84 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     transition: background 0.15s;
     flex-shrink: 0;
 }
-.fcw-icon-btn:hover { background: rgba(255,255,255,0.3); }
+.fcw-icon-btn:hover { background: rgba(255,255,255,0.32); }
+
+/* ── Live Chat Banner ─────────────────────────────────────────────────────── */
+.fcw-live-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 12px;
+    background: linear-gradient(90deg, #065f46 0%, #047857 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.fcw-live-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #ffffff;
+}
+.fcw-live-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: fcwStatusPulse 1.2s infinite;
+    flex-shrink: 0;
+}
+.fcw-live-end-btn {
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.fcw-live-end-btn:hover { background: #dc2626; }
+
+/* ── Mode Switcher Bar ───────────────────────────────────────────────────── */
+.fcw-mode-bar {
+    display: flex;
+    gap: 4px;
+    padding: 7px 10px;
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+}
+.fcw-mode-bar::-webkit-scrollbar { display: none; }
+.fcw-mode-pill {
+    padding: 4px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+.fcw-mode-pill:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.28);
+}
+.fcw-mode-pill.active {
+    background: var(--accent, #10b981);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
 
 /* ── Messages Area ───────────────────────────────────────────────────────── */
 .fcw-messages {
@@ -2097,7 +2174,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 .fcw-messages::-webkit-scrollbar { width: 4px; }
 .fcw-messages::-webkit-scrollbar-track { background: transparent; }
 .fcw-messages::-webkit-scrollbar-thumb {
-    background: var(--border-subtle, rgba(255,255,255,0.1));
+    background: rgba(255,255,255,0.15);
     border-radius: 4px;
 }
 
@@ -2126,27 +2203,109 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     margin-top: auto;
 }
 .fcw-msg.bot  .fcw-msg-icon { background: var(--accent, #10b981); color: #fff; }
-.fcw-msg.user .fcw-msg-icon { background: rgba(255,255,255,0.1); color: var(--text-secondary); }
+.fcw-msg.user .fcw-msg-icon { background: rgba(255,255,255,0.15); color: #fff; }
+.fcw-msg.live-teacher .fcw-msg-icon { background: #3b82f6; color: #fff; }
 
+/* ── Bubble Styles (HIGH CONTRAST WHITE TEXT) ────────────────────────────── */
 .fcw-msg-bubble {
-    max-width: 78%;
-    padding: 9px 13px;
+    max-width: 82%;
+    padding: 10px 14px;
     border-radius: 14px;
     font-size: 13px;
     line-height: 1.55;
     word-break: break-word;
     white-space: pre-wrap;
 }
+
+/* AI / Bot bubble — Pure crisp white text */
 .fcw-msg.bot .fcw-msg-bubble {
-    background: var(--bg-primary, #0f1a14);
-    color: var(--text-primary, #e0f2ea);
+    background: #0f231c !important;
+    background: linear-gradient(145deg, #132a22 0%, #0d1e18 100%) !important;
+    color: #ffffff !important;
     border-bottom-left-radius: 4px;
-    border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
+
+/* Ensure ALL elements inside bot bubble are crisp pure white */
+.fcw-msg.bot .fcw-msg-bubble * {
+    color: #ffffff !important;
+}
+.fcw-msg.bot .fcw-msg-bubble strong {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+.fcw-msg.bot .fcw-msg-bubble em {
+    color: #e2e8f0 !important;
+    font-style: italic;
+}
+.fcw-msg.bot .fcw-msg-bubble li {
+    color: #f8fafc !important;
+    margin: 2px 0;
+}
+.fcw-msg.bot .fcw-msg-bubble code {
+    color: #86efac !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.fcw-msg.bot .fcw-msg-bubble pre {
+    color: #f8fafc !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    margin: 6px 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.fcw-msg.bot .fcw-msg-bubble pre * {
+    color: #f8fafc !important;
+}
+.fcw-msg.bot .fcw-msg-bubble table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 6px 0;
+    font-size: 11.5px;
+}
+.fcw-msg.bot .fcw-msg-bubble th,
+.fcw-msg.bot .fcw-msg-bubble td {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    color: #ffffff !important;
+}
+.fcw-msg.bot .fcw-msg-bubble th {
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 700;
+}
+.fcw-msg.bot .fcw-msg-bubble a {
+    color: #38bdf8 !important;
+    text-decoration: underline;
+}
+
+/* User bubble */
 .fcw-msg.user .fcw-msg-bubble {
     background: var(--accent, #10b981);
-    color: #fff;
+    color: #ffffff !important;
     border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+.fcw-msg.user .fcw-msg-bubble * {
+    color: #ffffff !important;
+}
+
+/* Live teacher message bubble */
+.fcw-msg.live-teacher .fcw-msg-bubble {
+    background: #1e3a8a !important;
+    border: 1px solid #3b82f6 !important;
+    color: #ffffff !important;
+}
+.fcw-msg.live-teacher .fcw-msg-bubble * {
+    color: #ffffff !important;
 }
 
 /* Typing indicator */
@@ -2155,10 +2314,10 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     align-items: center;
     gap: 4px;
     padding: 10px 13px;
-    background: var(--bg-primary, #0f1a14);
+    background: #0f231c;
     border-radius: 14px;
     border-bottom-left-radius: 4px;
-    border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    border: 1px solid rgba(255, 255, 255, 0.12);
     width: fit-content;
     max-width: 70px;
 }
@@ -2179,9 +2338,142 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 /* Related topics note */
 .fcw-related-note {
     font-size: 11px;
-    color: var(--text-secondary, #94a3b8);
+    color: rgba(255, 255, 255, 0.75);
     margin-top: 4px;
     padding: 0 2px;
+}
+
+/* ── Interactive Quiz Card Styles ────────────────────────────────────────── */
+.fcw-quiz-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.fcw-quiz-topic-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent, #10b981);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.fcw-quiz-q-text {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #ffffff !important;
+    line-height: 1.45;
+}
+.fcw-quiz-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.fcw-quiz-opt-btn {
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff !important;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+.fcw-quiz-opt-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: translateX(2px);
+}
+.fcw-quiz-opt-btn.correct {
+    background: rgba(34, 197, 94, 0.35) !important;
+    border-color: #22c55e !important;
+    color: #86efac !important;
+    font-weight: 700;
+}
+.fcw-quiz-opt-btn.wrong {
+    background: rgba(239, 68, 68, 0.35) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+    animation: fcwShake 0.3s ease;
+}
+@keyframes fcwShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+.fcw-quiz-exp-box {
+    margin-top: 4px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #f1f5f9 !important;
+}
+
+/* ── Exam Countdown Card Styles ──────────────────────────────────────────── */
+.fcw-countdown-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.fcw-countdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.fcw-countdown-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+}
+.fcw-countdown-badge {
+    background: rgba(56, 189, 248, 0.2);
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+}
+.fcw-countdown-days-big {
+    font-size: 22px;
+    font-weight: 800;
+    color: #38bdf8;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+.fcw-countdown-days-big span {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+}
+.fcw-study-plan-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+}
+.fcw-study-item {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.88);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* ── Suggestion Chips Bar ────────────────────────────────────────────────── */
@@ -2201,19 +2493,20 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 .fcw-chip {
     padding: 5px 11px;
     border-radius: 20px;
-    border: 1px solid var(--accent, #10b981);
-    color: var(--accent, #10b981);
-    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
     font-size: 11.5px;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s, color 0.15s, transform 0.15s;
+    transition: all 0.15s ease;
     flex-shrink: 0;
 }
 .fcw-chip:hover {
     background: var(--accent, #10b981);
-    color: #fff;
+    color: #ffffff;
+    border-color: var(--accent, #10b981);
     transform: translateY(-1px);
 }
 
@@ -2223,17 +2516,17 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     align-items: flex-end;
     gap: 8px;
     padding: 8px 12px 10px;
-    border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: var(--bg-secondary, #142e25);
     flex-shrink: 0;
 }
 .fcw-input {
     flex: 1;
     resize: none;
-    background: var(--bg-primary, #0f1a14);
-    border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+    background: #0f1a14;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
-    color: var(--text-primary, #e0f2ea);
+    color: #ffffff !important;
     font-family: inherit;
     font-size: 13px;
     padding: 9px 12px;
@@ -2244,7 +2537,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     transition: border-color 0.15s;
 }
 .fcw-input:focus { border-color: var(--accent, #10b981); }
-.fcw-input::placeholder { color: var(--text-secondary, #94a3b8); }
+.fcw-input::placeholder { color: rgba(255, 255, 255, 0.55); }
 
 .fcw-send-btn {
     width: 38px;
@@ -2252,7 +2545,7 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     border-radius: 10px;
     border: none;
     background: var(--accent, #10b981);
-    color: #fff;
+    color: #ffffff;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -2269,8 +2562,8 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
     text-align: center;
     padding: 5px 10px 8px;
     font-size: 10.5px;
-    color: var(--text-secondary, #94a3b8);
-    border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.04));
+    color: rgba(255, 255, 255, 0.65);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     flex-shrink: 0;
 }
 

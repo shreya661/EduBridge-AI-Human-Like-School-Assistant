@@ -884,6 +884,24 @@
                 </div>
             </div>
 
+            <!-- Live Chat Status Banner (shown during human-in-the-loop chat) -->
+            <div class="fcw-live-banner" id="fcwLiveBanner" style="display:none">
+                <div class="fcw-live-banner-left">
+                    <span class="fcw-live-pulse-dot"></span>
+                    <span id="fcwLiveBannerText">Live Teacher Chat Active</span>
+                </div>
+                <button class="fcw-live-end-btn" id="fcwLiveEndBtn">End</button>
+            </div>
+
+            <!-- Mode Switcher Bar -->
+            <div class="fcw-mode-bar" id="fcwModeBar">
+                <button class="fcw-mode-pill active" data-mode="all">⚡ All</button>
+                <button class="fcw-mode-pill" data-mode="operations">📊 Operations</button>
+                <button class="fcw-mode-pill" data-mode="tutor">🧠 Tutor</button>
+                <button class="fcw-mode-pill" data-mode="faq">📖 FAQ</button>
+                <button class="fcw-mode-pill" data-mode="quiz">🎯 Quiz</button>
+            </div>
+
             <!-- Message List -->
             <div class="fcw-messages" id="fcwMessages">
                 <!-- Welcome message injected by JS -->
