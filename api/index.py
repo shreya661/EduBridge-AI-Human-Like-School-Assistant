@@ -1,33 +1,29 @@
 """
 Vercel Serverless Function entry point for FastAPI backend.
-Resolves path correctly whether backend/ is at the root or in api/ subdirectory.
+
+Vercel requires that 'app' be a top-level module attribute.
+We resolve the import path before importing so 'from app.main import app'
+always works, regardless of how Vercel sets up /var/task.
 """
 
 import sys
 import os
 
-# Current directory is /var/task/api on Vercel (where api/ lives)
-# Try multiple resolution strategies
-_cur = os.path.dirname(os.path.abspath(__file__))  # api/
-_root = os.path.dirname(_cur)                        # project root
+# Build candidate paths in order of preference
+_here = os.path.dirname(os.path.abspath(__file__))          # /var/task/api
+_root = os.path.dirname(_here)                               # /var/task
 
-# Strategy 1: api/app exists (copied bundle)
-_api_app = os.path.join(_cur, "app")
-# Strategy 2: backend/app exists at root
-_backend = os.path.join(_root, "backend")
+_candidates = [
+    _here,                                                   # api/ has app/ copied in
+    os.path.join(_root, "backend"),                         # root backend/
+    _root,                                                   # root itself
+    "/var/task/api",                                         # absolute Vercel path for api/
+    "/var/task/backend",                                     # absolute Vercel path for backend/
+    "/var/task",                                             # absolute Vercel root
+]
 
-for path in [_cur, _backend, _root]:
-    if path and path not in sys.path and os.path.isdir(path):
-        sys.path.insert(0, path)
+for _p in _candidates:
+    if _p and os.path.isdir(_p) and _p not in sys.path:
+        sys.path.insert(0, _p)
 
-try:
-    from app.main import app
-except ModuleNotFoundError:
-    try:
-        from backend.app.main import app
-    except ModuleNotFoundError:
-        # Last resort: absolute Vercel path
-        vercel_backend = "/var/task/backend"
-        if vercel_backend not in sys.path:
-            sys.path.insert(0, vercel_backend)
-        from app.main import app
+from app.main import app  # noqa: E402 — must be top-level for Vercel
