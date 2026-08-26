@@ -2031,5 +2031,297 @@ window.addEventListener('DOMContentLoaded', () => {
     initThemeEngine();
     setupEventListeners();
     loginUser('STU10A88F2', 'Password@123', 'STUDENT');
+    initFloatingChatWidget();
 });
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOATING CHAT WIDGET (FCW) — XYZ AI Knowledge & Homework Tutor
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const FCW = {
+    isOpen: false,
+    isTyping: false,
+    unreadCount: 0,
+    conversationHistory: [],
+
+    // DOM refs (populated in init)
+    launcher: null,
+    window: null,
+    messages: null,
+    input: null,
+    sendBtn: null,
+    chipsScroll: null,
+    unreadBadge: null,
+    minimizeBtn: null,
+    closeBtn: null,
+
+    WELCOME_MSG: "👋 Hi! I'm your **XYZ AI Tutor**.\n\nAsk me about school policies, exam schedules, homework help, Newton's laws, photosynthesis, essay writing, fees, holidays, and more!\n\nTry one of the quick suggestions below 👇",
+
+    DEFAULT_CHIPS: [
+        "School timings?",
+        "Exam schedule?",
+        "Attendance policy?",
+        "Explain photosynthesis",
+        "Newton's laws?",
+        "Essay writing tips?",
+        "Fee structure?",
+        "Upcoming holidays?",
+        "Contact a teacher?",
+    ],
+};
+
+function initFloatingChatWidget() {
+    FCW.launcher     = document.getElementById('fcwLauncher');
+    FCW.window       = document.getElementById('fcwWindow');
+    FCW.messages     = document.getElementById('fcwMessages');
+    FCW.input        = document.getElementById('fcwInput');
+    FCW.sendBtn      = document.getElementById('fcwSendBtn');
+    FCW.chipsScroll  = document.getElementById('fcwChipsScroll');
+    FCW.unreadBadge  = document.getElementById('fcwUnreadBadge');
+    FCW.minimizeBtn  = document.getElementById('fcwMinimizeBtn');
+    FCW.closeBtn     = document.getElementById('fcwCloseBtn');
+
+    if (!FCW.launcher) return; // Safety guard
+
+    // Event listeners
+    FCW.launcher.addEventListener('click', fcwToggle);
+    FCW.closeBtn.addEventListener('click', fcwClose);
+    FCW.minimizeBtn.addEventListener('click', fcwClose);
+    FCW.sendBtn.addEventListener('click', fcwSend);
+    FCW.input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            fcwSend();
+        }
+    });
+    FCW.input.addEventListener('input', fcwAutoGrow);
+
+    // Load suggestion chips
+    fcwLoadChips(FCW.DEFAULT_CHIPS);
+
+    // Show unread badge after a short delay to entice the user
+    setTimeout(() => {
+        if (!FCW.isOpen) {
+            FCW.unreadCount = 1;
+            fcwUpdateBadge();
+        }
+    }, 3500);
+}
+
+function fcwToggle() {
+    FCW.isOpen ? fcwClose() : fcwOpen();
+}
+
+function fcwOpen() {
+    FCW.isOpen = true;
+    FCW.window.style.display = 'flex';
+
+    // Reset unread badge
+    FCW.unreadCount = 0;
+    fcwUpdateBadge();
+
+    // Show welcome message if first time
+    if (FCW.conversationHistory.length === 0) {
+        fcwAddBotMessage(FCW.WELCOME_MSG, false);
+    }
+
+    // Focus input
+    setTimeout(() => FCW.input.focus(), 120);
+}
+
+function fcwClose() {
+    FCW.isOpen = false;
+    // Animate out
+    FCW.window.style.animation = 'none';
+    FCW.window.style.opacity = '0';
+    FCW.window.style.transform = 'translateY(20px) scale(0.95)';
+    FCW.window.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+    setTimeout(() => {
+        FCW.window.style.display = 'none';
+        FCW.window.style.opacity = '';
+        FCW.window.style.transform = '';
+        FCW.window.style.transition = '';
+        FCW.window.style.animation = '';
+    }, 180);
+}
+
+async function fcwSend() {
+    const text = FCW.input.value.trim();
+    if (!text || FCW.isTyping) return;
+
+    // Add user message
+    fcwAddUserMessage(text);
+    FCW.input.value = '';
+    fcwAutoGrow();
+
+    // Track in history
+    FCW.conversationHistory.push({ role: 'user', text });
+
+    // Show typing indicator
+    fcwShowTyping();
+
+    // Call the backend chatbot API
+    try {
+        const currentRole = (window.currentRole || 'STUDENT').toUpperCase();
+        const resp = await fetch('/api/v1/chatbot/message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: text,
+                role: currentRole,
+                conversation_id: null,
+            }),
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        fcwHideTyping();
+        fcwAddBotMessage(data.answer, true);
+
+        // Update suggestion chips if response has contextual ones
+        if (data.suggestions && data.suggestions.length > 0) {
+            fcwLoadChips(data.suggestions);
+        }
+
+        // Track in history
+        FCW.conversationHistory.push({ role: 'bot', text: data.answer });
+
+    } catch (err) {
+        fcwHideTyping();
+        fcwAddBotMessage(
+            "⚠️ I'm having trouble connecting to the knowledge base right now. Please try again in a moment.",
+            true
+        );
+        console.warn('[FCW] API error:', err);
+    }
+}
+
+function fcwAddUserMessage(text) {
+    const msgEl = document.createElement('div');
+    msgEl.className = 'fcw-msg user';
+    msgEl.innerHTML = `
+        <div class="fcw-msg-icon">👤</div>
+        <div class="fcw-msg-bubble">${fcwEscape(text)}</div>
+    `;
+    FCW.messages.appendChild(msgEl);
+    fcwScrollBottom();
+}
+
+function fcwAddBotMessage(text, animate = true) {
+    const msgEl = document.createElement('div');
+    msgEl.className = 'fcw-msg bot';
+
+    // Convert basic markdown to HTML
+    const htmlContent = fcwMarkdownLite(text);
+
+    msgEl.innerHTML = `
+        <div class="fcw-msg-icon">🎓</div>
+        <div class="fcw-msg-bubble">${htmlContent}</div>
+    `;
+    FCW.messages.appendChild(msgEl);
+    fcwScrollBottom();
+
+    // If widget is closed, increment unread
+    if (!FCW.isOpen && animate) {
+        FCW.unreadCount++;
+        fcwUpdateBadge();
+    }
+}
+
+let fcwTypingEl = null;
+function fcwShowTyping() {
+    FCW.isTyping = true;
+    FCW.sendBtn.disabled = true;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'fcw-msg bot';
+    wrap.id = 'fcwTypingWrap';
+    wrap.innerHTML = `
+        <div class="fcw-msg-icon">🎓</div>
+        <div class="fcw-typing">
+            <div class="fcw-typing-dot"></div>
+            <div class="fcw-typing-dot"></div>
+            <div class="fcw-typing-dot"></div>
+        </div>
+    `;
+    FCW.messages.appendChild(wrap);
+    fcwTypingEl = wrap;
+    fcwScrollBottom();
+}
+
+function fcwHideTyping() {
+    FCW.isTyping = false;
+    FCW.sendBtn.disabled = false;
+    if (fcwTypingEl) {
+        fcwTypingEl.remove();
+        fcwTypingEl = null;
+    }
+}
+
+function fcwLoadChips(chips) {
+    if (!FCW.chipsScroll) return;
+    FCW.chipsScroll.innerHTML = '';
+    chips.forEach(chip => {
+        const btn = document.createElement('button');
+        btn.className = 'fcw-chip';
+        btn.textContent = chip;
+        btn.addEventListener('click', () => {
+            FCW.input.value = chip;
+            fcwSend();
+        });
+        FCW.chipsScroll.appendChild(btn);
+    });
+}
+
+function fcwScrollBottom() {
+    if (FCW.messages) {
+        FCW.messages.scrollTop = FCW.messages.scrollHeight;
+    }
+}
+
+function fcwUpdateBadge() {
+    if (!FCW.unreadBadge) return;
+    if (FCW.unreadCount > 0 && !FCW.isOpen) {
+        FCW.unreadBadge.textContent = FCW.unreadCount > 9 ? '9+' : FCW.unreadCount;
+        FCW.unreadBadge.style.display = 'flex';
+    } else {
+        FCW.unreadBadge.style.display = 'none';
+    }
+}
+
+function fcwAutoGrow() {
+    if (!FCW.input) return;
+    FCW.input.style.height = 'auto';
+    FCW.input.style.height = Math.min(FCW.input.scrollHeight, 90) + 'px';
+}
+
+function fcwEscape(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function fcwMarkdownLite(text) {
+    // Convert limited markdown subset to HTML for chat bubbles
+    return text
+        // Bold **text**
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // Italic *text*
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        // Inline code `code`
+        .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;font-size:0.9em">$1</code>')
+        // Code block ```...``` (simple single line)
+        .replace(/```[\w]*\n?([\s\S]+?)```/g, '<pre style="background:rgba(0,0,0,0.25);padding:8px 10px;border-radius:8px;font-size:11.5px;margin:4px 0;overflow-x:auto;white-space:pre-wrap">$1</pre>')
+        // Bullet points (• or - or *)
+        .replace(/^[•\-\*] (.+)$/gm, '<li style="margin:2px 0;list-style:none;padding-left:12px">• $1</li>')
+        // Numbered lists
+        .replace(/^\d+\. (.+)$/gm, (m, p) => `<li style="margin:2px 0;list-style:decimal;margin-left:18px">${p}</li>`)
+        // Links
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--accent);text-decoration:underline" target="_blank">$1</a>')
+        // New lines → <br>
+        .replace(/\n/g, '<br>');
+}
 

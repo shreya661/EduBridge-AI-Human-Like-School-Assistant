@@ -93,6 +93,7 @@ from app.directory.router import router as directory_router
 from app.calendar.router import router as calendar_router
 from app.analytics.router import router as analytics_router
 from app.domain.role_guides_router import router as role_guides_router
+from app.chatbot.router import router as chatbot_router
 
 # Include all core service routers
 app.include_router(auth_router)
@@ -108,6 +109,7 @@ app.include_router(directory_router)
 app.include_router(calendar_router)
 app.include_router(analytics_router)
 app.include_router(role_guides_router)
+app.include_router(chatbot_router)
 
 # Mount static directory for interactive frontend
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")

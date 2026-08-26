@@ -1908,3 +1908,383 @@ input:checked + .switch-slider:before { transform: translateX(18px); }
 }
 .sidebar-settings-btn:hover { color: #fff; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOATING CHAT WIDGET (FCW) — XYZ AI Knowledge & Homework Tutor
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Container ──────────────────────────────────────────────────────────── */
+.fcw-container {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    font-family: 'Inter', 'Outfit', system-ui, sans-serif;
+}
+
+/* ── Launcher Bubble ─────────────────────────────────────────────────────── */
+.fcw-launcher {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent, #10b981);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.35), 0 0 0 0 rgba(16,185,129,0.4);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1),
+                box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fcw-launcher:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 8px rgba(16,185,129,0.15);
+}
+.fcw-launcher:active { transform: scale(0.96); }
+
+.fcw-launcher-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fcw-launcher-icon {
+    font-size: 26px;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+}
+.fcw-launcher-pulse {
+    position: absolute;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: var(--accent, #10b981);
+    opacity: 0.4;
+    animation: fcwPulse 2.2s ease-out infinite;
+    z-index: 1;
+}
+@keyframes fcwPulse {
+    0%   { transform: scale(1); opacity: 0.4; }
+    70%  { transform: scale(1.6); opacity: 0; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Unread badge */
+.fcw-unread-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-primary, #0f1a14);
+    animation: fcwBadgePop 0.3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 10;
+}
+@keyframes fcwBadgePop {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+
+/* ── Chat Window ─────────────────────────────────────────────────────────── */
+.fcw-window {
+    width: 360px;
+    height: 520px;
+    border-radius: 18px;
+    background: var(--bg-secondary, #142e25);
+    border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fcwSlideIn 0.28s cubic-bezier(.34,1.25,.64,1);
+    backdrop-filter: blur(20px);
+}
+@keyframes fcwSlideIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.fcw-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--accent, #10b981);
+    background: linear-gradient(135deg, var(--accent, #10b981) 0%, color-mix(in srgb, var(--accent, #10b981) 70%, #000) 100%);
+    flex-shrink: 0;
+}
+.fcw-header-left { display: flex; align-items: center; gap: 10px; }
+.fcw-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.fcw-header-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.01em;
+}
+.fcw-header-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 2px;
+}
+.fcw-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #86efac;
+    animation: fcwStatusPulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes fcwStatusPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+.fcw-header-actions { display: flex; gap: 4px; }
+.fcw-icon-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+.fcw-icon-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* ── Messages Area ───────────────────────────────────────────────────────── */
+.fcw-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+}
+.fcw-messages::-webkit-scrollbar { width: 4px; }
+.fcw-messages::-webkit-scrollbar-track { background: transparent; }
+.fcw-messages::-webkit-scrollbar-thumb {
+    background: var(--border-subtle, rgba(255,255,255,0.1));
+    border-radius: 4px;
+}
+
+/* Individual messages */
+.fcw-msg {
+    display: flex;
+    gap: 8px;
+    animation: fcwMsgSlide 0.2s ease;
+}
+@keyframes fcwMsgSlide {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.fcw-msg.user  { flex-direction: row-reverse; }
+.fcw-msg.bot   { flex-direction: row; }
+
+.fcw-msg-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+.fcw-msg.bot  .fcw-msg-icon { background: var(--accent, #10b981); color: #fff; }
+.fcw-msg.user .fcw-msg-icon { background: rgba(255,255,255,0.1); color: var(--text-secondary); }
+
+.fcw-msg-bubble {
+    max-width: 78%;
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+.fcw-msg.bot .fcw-msg-bubble {
+    background: var(--bg-primary, #0f1a14);
+    color: var(--text-primary, #e0f2ea);
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+}
+.fcw-msg.user .fcw-msg-bubble {
+    background: var(--accent, #10b981);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+/* Typing indicator */
+.fcw-typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 13px;
+    background: var(--bg-primary, #0f1a14);
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    width: fit-content;
+    max-width: 70px;
+}
+.fcw-typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent, #10b981);
+    animation: fcwTypingBounce 1.2s ease-in-out infinite;
+}
+.fcw-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.fcw-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes fcwTypingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30%            { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Related topics note */
+.fcw-related-note {
+    font-size: 11px;
+    color: var(--text-secondary, #94a3b8);
+    margin-top: 4px;
+    padding: 0 2px;
+}
+
+/* ── Suggestion Chips Bar ────────────────────────────────────────────────── */
+.fcw-chips-bar {
+    padding: 0 10px 8px;
+    flex-shrink: 0;
+}
+.fcw-chips-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+}
+.fcw-chips-scroll::-webkit-scrollbar { display: none; }
+
+.fcw-chip {
+    padding: 5px 11px;
+    border-radius: 20px;
+    border: 1px solid var(--accent, #10b981);
+    color: var(--accent, #10b981);
+    background: transparent;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+}
+.fcw-chip:hover {
+    background: var(--accent, #10b981);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* ── Input Bar ───────────────────────────────────────────────────────────── */
+.fcw-input-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 8px 12px 10px;
+    border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    background: var(--bg-secondary, #142e25);
+    flex-shrink: 0;
+}
+.fcw-input {
+    flex: 1;
+    resize: none;
+    background: var(--bg-primary, #0f1a14);
+    border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+    border-radius: 10px;
+    color: var(--text-primary, #e0f2ea);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    line-height: 1.5;
+    max-height: 90px;
+    overflow-y: auto;
+    transition: border-color 0.15s;
+}
+.fcw-input:focus { border-color: var(--accent, #10b981); }
+.fcw-input::placeholder { color: var(--text-secondary, #94a3b8); }
+
+.fcw-send-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent, #10b981);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.15s;
+    flex-shrink: 0;
+}
+.fcw-send-btn:hover { background: color-mix(in srgb, var(--accent, #10b981) 80%, #000); transform: scale(1.05); }
+.fcw-send-btn:active { transform: scale(0.95); }
+.fcw-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Footer Bar ──────────────────────────────────────────────────────────── */
+.fcw-footer-bar {
+    text-align: center;
+    padding: 5px 10px 8px;
+    font-size: 10.5px;
+    color: var(--text-secondary, #94a3b8);
+    border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.04));
+    flex-shrink: 0;
+}
+
+/* ── Responsive: smaller screens ────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .fcw-window {
+        width: calc(100vw - 20px);
+        height: 70vh;
+        bottom: 80px;
+        right: 10px;
+    }
+    .fcw-container {
+        bottom: 14px;
+        right: 14px;
+    }
+}
+
