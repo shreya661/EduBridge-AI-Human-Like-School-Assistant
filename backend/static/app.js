@@ -2105,6 +2105,8 @@ const FCW = {
             "Quiz: Quadratic Equations",
             "Quiz: Cell Biology",
             "Quiz: Essay Writing",
+            "Quiz: Chemistry & Elements",
+            "Quiz: Computer Science & AI",
         ]
     }
 };

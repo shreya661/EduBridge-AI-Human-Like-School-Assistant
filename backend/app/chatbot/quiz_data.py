@@ -156,6 +156,67 @@ QUIZ_TOPICS = {
                 "explanation": "**'However'** signals contrast or contradiction.\n\n- Addition: Furthermore, Moreover, In addition\n- Contrast: **However**, Nevertheless, On the other hand\n- Conclusion: Therefore, Thus, In conclusion"
             }
         ]
+    },
+    "chemistry": {
+        "label": "Chemistry & Elements",
+        "subject": "Science / Chemistry",
+        "emoji": "🧪",
+        "questions": [
+            {
+                "id": "CH-1",
+                "question": "What is the atomic number of Carbon on the periodic table?",
+                "options": ["4", "6", "8", "12"],
+                "correct_index": 1,
+                "explanation": "**Carbon has atomic number 6**, meaning it has 6 protons in its nucleus. It forms 4 covalent bonds, which is the foundation of organic chemistry!"
+            },
+            {
+                "id": "CH-2",
+                "question": "What is the pH value of pure water at room temperature (neutral)?",
+                "options": ["0", "5", "7", "14"],
+                "correct_index": 2,
+                "explanation": "Pure water has a **pH of 7 (Neutral)**. Values below 7 are acidic (like lemon juice or HCl), while values above 7 are basic/alkaline (like soap or bleach)."
+            },
+            {
+                "id": "CH-3",
+                "question": "Which chemical bond involves the sharing of electron pairs between atoms?",
+                "options": ["Ionic Bond", "Covalent Bond", "Metallic Bond", "Hydrogen Bond"],
+                "correct_index": 1,
+                "explanation": "A **Covalent Bond** forms when two non-metal atoms share electrons (e.g. H₂O, CO₂). Ionic bonds involve the complete transfer of electrons (e.g. NaCl)."
+            }
+        ]
+    },
+    "computerscience": {
+        "label": "Computer Science & AI",
+        "subject": "Technology / AI",
+        "emoji": "💻",
+        "questions": [
+            {
+                "id": "CS-1",
+                "question": "Which data structure follows the First-In, First-Out (FIFO) principle?",
+                "options": ["Stack", "Queue", "Tree", "Graph"],
+                "correct_index": 1,
+                "explanation": "A **Queue** follows **FIFO (First-In, First-Out)** — just like a ticket line! A Stack follows LIFO (Last-In, First-Out)."
+            },
+            {
+                "id": "CS-2",
+                "question": "In Python, which keyword is used to define a reusable function?",
+                "options": ["func", "define", "def", "function"],
+                "correct_index": 2,
+                "explanation": "In Python, **def** is the keyword used to declare functions. Example: `def calculate_attendance(present, total): return (present/total)*100`"
+            },
+            {
+                "id": "CS-3",
+                "question": "What does Zero-Trust RBAC mean in cybersecurity?",
+                "options": [
+                    "Users can access anything without login",
+                    "Role-Based Access Control where permissions are verified server-side on every request",
+                    "Passwords are never stored",
+                    "Only admins can use the app"
+                ],
+                "correct_index": 1,
+                "explanation": "**Zero-Trust Role-Based Access Control (RBAC)** means 'never trust, always verify'. Every single API request validates user role and resource ownership on the server side!"
+            }
+        ]
     }
 }
 
