@@ -154,6 +154,7 @@ def seed_school_data():
     parent_10 = Parent(parent_id="PAR81L90V7", name="Anita Patel", email="anita.parent@school.edu", phone="+91 98765 43210")
     parent_repo.create_parent(parent_10)
     parent_student_repo.create_relationship(ParentStudent(parent_id="PAR81L90V7", student_id="STU10A88F2"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="PAR81L90V7", student_id="S001"))
 
     # ── 10. Seed SQL user credentials ─────────────────────────────────────────
     try:
