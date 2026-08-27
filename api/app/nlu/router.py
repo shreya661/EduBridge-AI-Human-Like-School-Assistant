@@ -60,11 +60,18 @@ async def execute_nlu_message(
         target_lang = detected
 
     text_lower = text.lower()
-    if "ignore previous instructions" in text_lower or "ignore instructions" in text_lower:
+    if any(k in text_lower for k in ["ignore previous instructions", "ignore instructions", "bypass security", "reveal system prompt", "show api key"]):
         return {
             "success": True,
             "intent": "unsupported_request",
-            "message": "Unsupported instruction attempt."
+            "message": "🛡️ Security Policy: Unauthorized system instruction or prompt injection attempt blocked by Zero-Trust filters."
+        }
+
+    if ("pretend" in text_lower or "act as" in text_lower or "grant admin" in text_lower) and ("principal" in text_lower or "teacher" in text_lower or "admin" in text_lower):
+        return {
+            "success": True,
+            "intent": "unsupported_request",
+            "message": "🛡️ Access Denied: Role spoofing attempt blocked. Zero-Trust Policy enforces that authenticated accounts cannot elevate privileges or override role boundaries."
         }
 
     nlu_result = nlu_service.process_natural_language(text, identity)
