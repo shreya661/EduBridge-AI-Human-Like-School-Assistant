@@ -162,3 +162,18 @@ The system implements a clear authorization boundary where:
 - Student-class enrollments
 - Attendance records with context
 
+---
+
+## Cloud Database & Serverless Architecture
+
+### Neon Serverless PostgreSQL
+- **Engine**: PostgreSQL 16 on AWS Serverless with connection pooling
+- **ORM**: SQLAlchemy 2.0 declarative models with `psycopg2-binary` driver
+- **Schema Auto-Migration**: Automated table initialization on startup (`Base.metadata.create_all`)
+- **Foreign Key Hierarchy**: `classes` $\rightarrow$ `students` $\rightarrow$ `attendance_records` / `parent_students`
+
+### Vercel Serverless Function Topology
+- **Entrypoint**: `api/index.py` with top-level `app` export
+- **Asset Delivery**: Static file serving for SPA dashboard, styles, and audio
+- **Zero-Trust Gate**: Session tokens verified per-request via HttpOnly cookies and `require_authenticated_identity` dependency injection
+
