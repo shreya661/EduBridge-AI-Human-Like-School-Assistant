@@ -22,8 +22,28 @@ def startup_event():
 
 
 @app.get("/health")
-def health_check() -> Dict[str, str]:
-    return {"status": "ok", "service": "XYZ AI"}
+def health_check() -> Dict[str, Any]:
+    from app.domain.database import DATABASE_URL, engine
+    db_status = "unconfigured"
+    db_type = "in-memory"
+    if DATABASE_URL:
+        db_type = "postgresql" if "postgres" in DATABASE_URL.lower() else "sqlite"
+        try:
+            if engine:
+                with engine.connect() as conn:
+                    conn.execute(__import__("sqlalchemy").text("SELECT 1"))
+                db_status = "connected"
+            else:
+                db_status = "initialized"
+        except Exception as e:
+            db_status = f"degraded: {str(e)[:40]}"
+    return {
+        "status": "ok",
+        "service": "XYZ AI",
+        "database": db_status,
+        "database_type": db_type,
+        "environment": os.getenv("ENVIRONMENT", "development")
+    }
 
 
 @app.get("/api/v1/users/{user_id}")
