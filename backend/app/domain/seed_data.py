@@ -138,6 +138,15 @@ def seed_school_data():
     student_10 = Student(student_id="STU10A88F2", name="Aarav Patel", email="aarav.student@school.edu", class_id="C001")
     student_repo.create_student(student_10)
 
+    attendance_repo.create_attendance_record(AttendanceRecord(
+        record_id=f"att-{uuid4().hex[:8]}",
+        student_id="STU10A88F2",
+        class_id="C001",
+        date=date.today(),
+        status=AttendanceStatus.PRESENT,
+        recorded_by="TCH90K11X4"
+    ))
+
     teacher_10 = Teacher(teacher_id="TCH90K11X4", name="Kumar Singh", email="kumar.teacher@school.edu", subject="Mathematics")
     teacher_repo.create_teacher(teacher_10)
     teacher_class_repo.create_relationship(TeacherClass(teacher_id="TCH90K11X4", class_id="C001"))
