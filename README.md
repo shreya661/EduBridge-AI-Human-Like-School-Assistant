@@ -191,7 +191,7 @@ Open **`http://localhost:8000`** in your browser to interact with the full web d
 
 ## 🧪 Automated Testing
 
-Run the full automated test suite (109 tests):
+Run the full automated test suite (124 tests):
 
 ```bash
 python -m pytest tests/ -v
@@ -201,10 +201,13 @@ python -m pytest tests/ -v
 | Test Suite | Purpose | Tests |
 |---|---|:---:|
 | `test_authentication.py` | Session creation, cookie validation, logout | 8 |
+| `test_custom_auth.py` | 10-char alphanumeric role authentication & registration | 3 |
 | `test_authorization_engine.py` | RBAC evaluation, ownership verification, rejections | 10 |
 | `test_authz.py` | AuthZ endpoints and error handling | 8 |
 | `test_domain.py` | Entity relationships, class enrollments, repositories | 9 |
 | `test_ownership.py` | Domain-level student and class ownership bounds | 4 |
+| `test_role_scoping.py` | Multi-role data isolation and ownership enforcement | 11 |
+| `test_sql_database.py` | PostgreSQL/SQLite relational ORM models & session | 1 |
 | `test_escalation.py` | Escalation ticket generation & honesty enforcement | 8 |
 | `test_multilingual.py` | 11 Indian languages detection & localized formatting | 3 |
 | `test_voice_avatar.py` | STT transcription, TTS synthesis, viseme cues | 5 |
@@ -215,8 +218,8 @@ python -m pytest tests/ -v
 | `test_conversation.py` | Multi-turn turn history & context preservation | 9 |
 | `test_nlu_schema.py` | Strict Pydantic schema validation (`extra="forbid"`) | 4 |
 | `test_nlu.py` | Classifier regex patterns & entity extraction | 5 |
-| `test_health.py` | Service health check | 1 |
-| **Total** | **All Modules Passing** | **109** |
+| `test_health.py` | Service health & database connectivity check | 1 |
+| **Total** | **All Modules Passing (100% Green)** | **124** |
 
 ---
 
