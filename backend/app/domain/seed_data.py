@@ -10,8 +10,35 @@ from .models import Student, Parent, Teacher, Class, ParentStudent, TeacherClass
 
 def seed_school_data():
     """Seed the school domain with fictional development data"""
-    
-    # Create students
+
+    # ── 1. Create classes FIRST (students FK → classes) ──────────────────────
+    class_001 = Class(
+        class_id="C001",
+        name="10-A",
+        grade_level=10,
+        section="A",
+        academic_year="2026-2027",
+        teacher_id="T001"
+    )
+    class_002 = Class(
+        class_id="C002",
+        name="10-B",
+        grade_level=10,
+        section="B",
+        academic_year="2026-2027",
+        teacher_id="T002"
+    )
+    class_repo.create_class(class_001)
+    class_repo.create_class(class_002)
+
+    # ── 2. Legacy class for unit tests ────────────────────────────────────────
+    teacher_legacy_1 = Teacher(teacher_id="teacher-001", name="Mr. Johnson", subject="Mathematics")
+    teacher_repo.create_teacher(teacher_legacy_1)
+
+    class_legacy_1 = Class(class_id="10-A", name="10-A", teacher_id="teacher-001")
+    class_repo.create_class(class_legacy_1)
+
+    # ── 3. Create students (after classes exist) ──────────────────────────────
     student_001 = Student(
         student_id="S001",
         name="Rahul Patel",
@@ -30,12 +57,17 @@ def seed_school_data():
         email="arjun.kumar@example.com",
         class_id="C001"
     )
-    
     student_repo.create_student(student_001)
     student_repo.create_student(student_002)
     student_repo.create_student(student_003)
-    
-    # Create parents
+
+    # Legacy students
+    student_legacy_1 = Student(student_id="student-001", name="Rahul", class_id="10-A")
+    student_legacy_2 = Student(student_id="student-002", name="Ananya", class_id="10-A")
+    student_repo.create_student(student_legacy_1)
+    student_repo.create_student(student_legacy_2)
+
+    # ── 4. Create parents ─────────────────────────────────────────────────────
     parent_001 = Parent(
         parent_id="P001",
         name="Anita Patel",
@@ -48,11 +80,18 @@ def seed_school_data():
         email="rajesh.sharma@example.com",
         phone="+1234567891"
     )
-    
     parent_repo.create_parent(parent_001)
     parent_repo.create_parent(parent_002)
-    
-    # Create teachers
+
+    # Legacy parents
+    parent_legacy_1 = Parent(parent_id="parent-001", name="Priya Sharma")
+    parent_legacy_2 = Parent(parent_id="parent-002", name="Ananya's Parent")
+    parent_legacy_3 = Parent(parent_id="parent-003", name="Rahul and Ananya's Parent")
+    parent_repo.create_parent(parent_legacy_1)
+    parent_repo.create_parent(parent_legacy_2)
+    parent_repo.create_parent(parent_legacy_3)
+
+    # ── 5. Create teachers ────────────────────────────────────────────────────
     teacher_001 = Teacher(
         teacher_id="T001",
         name="Kumar Singh",
@@ -65,66 +104,27 @@ def seed_school_data():
         email="priya.nair@example.com",
         subject="Science"
     )
-    
     teacher_repo.create_teacher(teacher_001)
     teacher_repo.create_teacher(teacher_002)
-    
-    # Create classes
-    class_001 = Class(
-        class_id="C001",
-        name="10-A",
-        grade_level=10,
-        section="A",
-        academic_year="2026-2027",
-        teacher_id="T001"
-    )
-    class_002 = Class(
-        class_id="C002",
-        name="10-B",
-        grade_level=10,
-        section="B",
-        academic_year="2026-2027",
-        teacher_id="T002"
-    )
-    
-    class_repo.create_class(class_001)
-    class_repo.create_class(class_002)
-    
-    # Create parent-student relationships
-    parent_student_001 = ParentStudent(
-        parent_id="P001",
-        student_id="S001"
-    )
-    parent_student_002 = ParentStudent(
-        parent_id="P001",
-        student_id="S003"
-    )
-    parent_student_003 = ParentStudent(
-        parent_id="P002",
-        student_id="S002"
-    )
-    
-    parent_student_repo.create_relationship(parent_student_001)
-    parent_student_repo.create_relationship(parent_student_002)
-    parent_student_repo.create_relationship(parent_student_003)
-    
-    # Create teacher-class relationships
-    teacher_class_001 = TeacherClass(
-        teacher_id="T001",
-        class_id="C001"
-    )
-    teacher_class_002 = TeacherClass(
-        teacher_id="T002",
-        class_id="C002"
-    )
-    
-    teacher_class_repo.create_relationship(teacher_class_001)
-    teacher_class_repo.create_relationship(teacher_class_002)
-    
-    # Create some initial attendance records
+
+    # ── 6. Parent-student relationships ──────────────────────────────────────
+    parent_student_repo.create_relationship(ParentStudent(parent_id="P001", student_id="S001"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="P001", student_id="S003"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="P002", student_id="S002"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-001", student_id="student-001"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-002", student_id="student-002"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-003", student_id="student-001"))
+    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-003", student_id="student-002"))
+
+    # ── 7. Teacher-class relationships ────────────────────────────────────────
+    teacher_class_repo.create_relationship(TeacherClass(teacher_id="T001", class_id="C001"))
+    teacher_class_repo.create_relationship(TeacherClass(teacher_id="T002", class_id="C002"))
+    teacher_class_repo.create_relationship(TeacherClass(teacher_id="teacher-001", class_id="10-A"))
+
+    # ── 8. Attendance records ─────────────────────────────────────────────────
     from uuid import uuid4
     from .models import AttendanceRecord, AttendanceStatus
-    
+
     attendance_repo.create_attendance_record(AttendanceRecord(
         record_id=f"att-{uuid4().hex[:8]}",
         student_id="S001",
@@ -133,39 +133,8 @@ def seed_school_data():
         status=AttendanceStatus.PRESENT,
         recorded_by="T001"
     ))
-    
-    # Legacy development teacher for unit tests
-    teacher_legacy_1 = Teacher(teacher_id="teacher-001", name="Mr. Johnson", subject="Mathematics")
-    teacher_repo.create_teacher(teacher_legacy_1)
 
-    # Legacy development classes for unit tests
-    class_legacy_1 = Class(class_id="10-A", name="10-A", teacher_id="teacher-001")
-    class_repo.create_class(class_legacy_1)
-
-    # Legacy development students for unit tests
-    student_legacy_1 = Student(student_id="student-001", name="Rahul", class_id="10-A")
-    student_legacy_2 = Student(student_id="student-002", name="Ananya", class_id="10-A")
-    student_repo.create_student(student_legacy_1)
-    student_repo.create_student(student_legacy_2)
-
-    # Legacy development parents for unit tests
-    parent_legacy_1 = Parent(parent_id="parent-001", name="Priya Sharma")
-    parent_legacy_2 = Parent(parent_id="parent-002", name="Ananya's Parent")
-    parent_legacy_3 = Parent(parent_id="parent-003", name="Rahul and Ananya's Parent")
-    parent_repo.create_parent(parent_legacy_1)
-    parent_repo.create_parent(parent_legacy_2)
-    parent_repo.create_parent(parent_legacy_3)
-
-    # Legacy development parent-student relationships
-    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-001", student_id="student-001"))
-    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-002", student_id="student-002"))
-    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-003", student_id="student-001"))
-    parent_student_repo.create_relationship(ParentStudent(parent_id="parent-003", student_id="student-002"))
-
-    # Legacy development teacher-class relationship
-    teacher_class_repo.create_relationship(TeacherClass(teacher_id="teacher-001", class_id="10-A"))
-
-    # Seed 10-character Alphanumeric accounts
+    # ── 9. 10-character alphanumeric accounts ─────────────────────────────────
     student_10 = Student(student_id="STU10A88F2", name="Aarav Patel", email="aarav.student@school.edu", class_id="C001")
     student_repo.create_student(student_10)
 
@@ -177,12 +146,12 @@ def seed_school_data():
     parent_repo.create_parent(parent_10)
     parent_student_repo.create_relationship(ParentStudent(parent_id="PAR81L90V7", student_id="STU10A88F2"))
 
-    # Seed SQLUser credentials with hashed password
+    # ── 10. Seed SQL user credentials ─────────────────────────────────────────
     try:
         from ..auth.security import hash_password
         from ..domain.database import SessionLocal
         from ..domain.sql_models import SQLUser
-        
+
         if SessionLocal:
             with SessionLocal() as session:
                 pw_hash, salt = hash_password("Password@123")
@@ -191,7 +160,6 @@ def seed_school_data():
                     SQLUser(user_id="TCH90K11X4", name="Kumar Singh", email="kumar.teacher@school.edu", role="TEACHER", password_hash=pw_hash, salt=salt),
                     SQLUser(user_id="PAR81L90V7", name="Anita Patel", email="anita.parent@school.edu", role="PARENT", password_hash=pw_hash, salt=salt),
                     SQLUser(user_id="PRN10A99X1", name="Dr. Smith", email="principal@school.edu", role="PRINCIPAL", password_hash=pw_hash, salt=salt),
-                    # Also seed legacy accounts with default password
                     SQLUser(user_id="S001", name="Rahul Patel", email="rahul.patel@example.com", role="STUDENT", password_hash=pw_hash, salt=salt),
                     SQLUser(user_id="T001", name="Kumar Singh", email="kumar.singh@example.com", role="TEACHER", password_hash=pw_hash, salt=salt),
                     SQLUser(user_id="P001", name="Anita Patel", email="anita.patel@example.com", role="PARENT", password_hash=pw_hash, salt=salt),
@@ -206,5 +174,5 @@ def seed_school_data():
     print("School domain data seeded successfully!")
 
 
-# Run seeding
-seed_school_data()
+# NOTE: Do NOT call seed_school_data() here at module level.
+# It is called from app.main startup_event() instead.
