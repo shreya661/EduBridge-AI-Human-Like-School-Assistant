@@ -909,9 +909,17 @@ async function sendMessage(text) {
         });
         const data = await res.json();
 
-        typingIndicator.remove();
+        if (typingIndicator && typingIndicator.parentNode) {
+            typingIndicator.remove();
+        }
 
-        const responseMessage = data.message || "Request processed.";
+        let responseMessage = "";
+        if (!res.ok) {
+            responseMessage = data.detail || data.message || "Request could not be processed. Please try again.";
+        } else {
+            responseMessage = data.message || "Request processed.";
+        }
+
         appendMessage("assistant", responseMessage);
 
         // Animate Avatar Speaking with Lip-sync & Speech
@@ -927,12 +935,12 @@ async function sendMessage(text) {
         }
 
         // Record Audit Log Item
-        const isAllowed = data.success !== false;
+        const isAllowed = res.ok && data.success !== false;
         logAuditEvent(
             currentRole,
             data.intent || "nlu_intent",
             isAllowed,
-            isAllowed ? "Authorized & Tool Executed" : (data.error || "Permission Denied")
+            isAllowed ? "Authorized & Tool Executed" : (data.error || data.detail || "Permission Denied")
         );
 
         // Real-time WhatsApp/SMS simulation trigger on Absent marks
@@ -940,12 +948,14 @@ async function sendMessage(text) {
             showSmsNotification(
                 "Anita Patel (Parent)",
                 "+91 98765-43210",
-                "Attendance Notice: Rahul Patel was marked ABSENT today. Please contact school if this is in error."
+                "Attendance Notice: Student attendance status recorded for today. Notification dispatched."
             );
         }
 
     } catch (err) {
-        typingIndicator.remove();
+        if (typingIndicator && typingIndicator.parentNode) {
+            typingIndicator.remove();
+        }
         const errText = currentLanguage === "gu" ? "સર્વર સાથે કનેક્ટ કરવામાં ભૂલ. કૃપા કરીને ફરી પ્રયાસ કરો." : (currentLanguage === "hi" ? "सर्वर से कनेक्ट करने में त्रुटि। कृपया पुनः प्रयास करें।" : "Error connecting to server. Please try again.");
         appendMessage("assistant", errText);
     }
