@@ -7,3 +7,5 @@ dist/
 .vscode/
 .pytest_cache/
 .coverage
+
+.vercel
