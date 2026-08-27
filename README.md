@@ -278,13 +278,22 @@ python -m pytest tests/ -v
 
 ---
 
-## 🌐 Deployment
+## 🌐 Cloud Deployment & Database Persistence
 
-This application is deployed on **Vercel Serverless** using `@vercel/python`:
-- **Live URL**: [https://xyz-ai-one.vercel.app](https://xyz-ai-one.vercel.app)
+This application is deployed on **Vercel Serverless** backed by **Neon Serverless PostgreSQL**:
+- **Live Application URL**: [https://xyz-ai-one.vercel.app](https://xyz-ai-one.vercel.app)
+- **Interactive Swagger Docs**: [https://xyz-ai-one.vercel.app/docs](https://xyz-ai-one.vercel.app/docs)
 - **Vercel Project**: `shreya661s-projects/xyz-ai`
+- **Database Engine**: Neon Cloud PostgreSQL 16 (AWS Serverless with SQLAlchemy 2.0 ORM & `psycopg2-binary`)
 - **GitHub Repo**: [EduBridge-AI-Human-Like-School-Assistant](https://github.com/shreya661/EduBridge-AI-Human-Like-School-Assistant)
 - **Deploy Guide**: [docs/vercel-deployment.md](docs/vercel-deployment.md)
+
+### Production Environment Variables on Vercel
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Neon Cloud PostgreSQL connection string (`postgresql://...`) |
+| `ENVIRONMENT` | Deployment environment (`production`) |
+| `CORS_ORIGINS` | Permitted cross-origin hosts (`*` for public access) |
 
 ---
 
