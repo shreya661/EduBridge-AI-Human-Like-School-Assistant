@@ -6,7 +6,7 @@ exam countdown calculations, live chat initiation, and context-aware replies.
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 
-from app.chatbot.knowledge_base import (
+from app.chatbot.knowledge_base import ( 
     search_knowledge_base,
     KNOWLEDGE_BASE,
 )
