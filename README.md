@@ -10,7 +10,7 @@
 
 **XYZ AI** is a role-aware conversational school assistant designed to serve **Students**, **Parents**, **Teachers**, and **School Principals/Management** across three interactive interfaces: **Chat**, **Voice (STT/TTS)**, and an **Interactive AI Avatar with synchronized lip-sync**.
 
-> 🌐 **Live at: [https://xyz-ai-one.vercel.app](https://xyz-ai-one.vercel.app)**
+> 🌐 **Live at: [https://xyz-ai-one.vercel.app](https://xyz-ai-one.vercel.app)**           
 
 ---
 
