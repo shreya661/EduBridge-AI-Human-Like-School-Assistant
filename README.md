@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-xyz--ai--one.vercel.app-10b981?style=for-the-badge)](https://xyz-ai-one.vercel.app)
 ![Architecture](https://img.shields.io/badge/Architecture-Zero--Trust%20Applied%20AI-6366f1?style=for-the-badge)
 ![Tests](https://img.shields.io/badge/Tests-109%20Passed-10b981?style=for-the-badge)
-![Languages](https://img.shields.io/badge/Languages-11%20Indian%20Languages-06b6d4?style=for-the-badge)
+![Languages](https://img.shields.io/badge/Languages-11%20Indian%20Languages-06b6d4?style=for-the-badge)      
 ![Security](https://img.shields.io/badge/Security-Deterministic%20RBAC%20%2B%20Ownership-f59e0b?style=for-the-badge)
 ![Chatbot](https://img.shields.io/badge/AI%20Tutor-Floating%20Chatbot%20%2B%20Quizzes-8b5cf6?style=for-the-badge)
 ![Deploy](https://img.shields.io/badge/Deploy-Vercel%20Serverless-000000?style=for-the-badge&logo=vercel)
